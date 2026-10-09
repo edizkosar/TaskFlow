@@ -48,11 +48,16 @@ Uygulama http://localhost:3000 adresinde açılır.
 | `npm run dev` | Geliştirme sunucusu |
 | `npm run build` / `npm start` | Production build ve sunucu |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | Rota tiplerini üretip TypeScript kontrolü |
 | `npm run test:e2e` | Playwright E2E testleri (production build, port 3100) |
 | `npm run db:migrate` | Yeni migration oluştur ve uygula |
 | `npm run db:studio` | Prisma Studio |
 
 E2E testleri varsayılan olarak `.env.local`'daki veritabanına yazar. Ayrı bir test veritabanı için `.env.test.local` dosyasına `DATABASE_URL` ve `DIRECT_URL` gir.
+
+## CI
+
+Her `main` push'unda ve pull request'te GitHub Actions lint, tip kontrolü, migration ve E2E testlerini çalıştırır (`.github/workflows/ci.yml`). Testler Neon `test` branch'ine bağlanır; bağlantı bilgileri repository secret olarak tutulur (`DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`). Hata durumunda Playwright raporu iş akışının çıktılarına eklenir.
 
 ## Belgeler
 

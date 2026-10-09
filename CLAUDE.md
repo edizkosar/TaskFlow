@@ -9,7 +9,8 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 ## Commands
 
 - `npm run dev` — dev server on http://localhost:3000 (also `.claude/launch.json` → `taskflow-dev`)
-- `npm run lint` / `npm run build` — run both before considering a change done
+- `npm run lint` / `npm run typecheck` / `npm run build` — run before considering a change done
+- CI (`.github/workflows/ci.yml`): lint, typecheck, migrate + E2E on every push/PR to `main`, against the Neon `test` branch (repo secrets `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`). Locally, E2E uses `.env.test.local` (same branch).
 - `npm run test:e2e` — Playwright Test (Edge) against a production build on :3100 (Next allows only one `next dev` per project). Includes axe WCAG 2.1 AA scans (`tests/e2e/a11y.spec.ts`); keep them green when changing UI.
 - `npm run db:migrate` — create/apply a migration (uses `DIRECT_URL`); `npm run db:generate` regenerates the client into `src/generated/prisma` (gitignored)
 - `npm run auth:generate` — regenerate Better Auth models into `prisma/schema.prisma`. It **overwrites the whole file**: copy app models back afterwards or edit auth models by hand.
