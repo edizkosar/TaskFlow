@@ -52,7 +52,7 @@ export function FilterBar({
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 border-b border-border/40 bg-background/60 px-4 py-2 backdrop-blur-md"
+      className="flex flex-wrap items-center gap-2 border-b border-border/30 bg-background/60 dark:border-white/5 px-4 py-2 backdrop-blur-md"
       role="toolbar"
       aria-label="Pano filtreleri"
     >

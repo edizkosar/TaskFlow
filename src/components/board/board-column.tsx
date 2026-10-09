@@ -68,11 +68,11 @@ export function BoardColumn({
           </ol>
         </SortableContext>
         {tasks.length === 0 && (
-          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border/60 px-3 py-7 text-center">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border/40 px-3 py-6 text-center dark:border-white/[0.06]">
             {filtered ? (
-              <SearchXIcon aria-hidden strokeWidth={1.5} className="size-6 text-muted-foreground/70" />
+              <SearchXIcon aria-hidden strokeWidth={1} className="size-4 text-muted-foreground opacity-40" />
             ) : (
-              <InboxIcon aria-hidden strokeWidth={1.5} className="size-6 text-muted-foreground/70" />
+              <InboxIcon aria-hidden strokeWidth={1} className="size-4 text-muted-foreground opacity-40" />
             )}
             <p className="text-xs text-muted-foreground">{filtered ? "Filtreye uyan görev yok" : "Görev yok"}</p>
           </div>

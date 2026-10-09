@@ -302,6 +302,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
       dueDate: null,
       assignee: null,
       labels: [],
+      commentCount: 0,
     };
     setPending((current) => [...current, temp]);
 

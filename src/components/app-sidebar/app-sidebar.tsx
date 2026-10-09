@@ -86,6 +86,7 @@ export function AppSidebar({
                   <SidebarMenuItem key={project.id}>
                     <SidebarMenuButton
                       isActive={active}
+                      className={ACTIVE_ITEM}
                       tooltip={project.name}
                       render={<Link href={href} aria-current={active ? "page" : undefined} />}
                     >
@@ -110,6 +111,7 @@ export function AppSidebar({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   isActive={settingsActive}
+                  className={ACTIVE_ITEM}
                   tooltip="Ayarlar"
                   render={<Link href={`${base}/settings`} aria-current={settingsActive ? "page" : undefined} />}
                 >
@@ -133,6 +135,10 @@ export function AppSidebar({
     </Sidebar>
   );
 }
+
+/** Active nav item: cobalt tint and a left indicator bar (text one shade darker in light mode for AA contrast). */
+const ACTIVE_ITEM =
+  "relative data-active:bg-primary/10 data-active:font-medium data-active:text-blue-700 dark:data-active:bg-primary/20 dark:data-active:text-blue-300 before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-r-full before:bg-primary before:opacity-0 before:transition-opacity before:duration-200 data-active:before:opacity-100";
 
 const MARK_COLORS = Object.keys(LABEL_COLORS).filter((c) => c !== "gray");
 

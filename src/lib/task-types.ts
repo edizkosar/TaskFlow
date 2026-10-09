@@ -23,6 +23,7 @@ export type BoardTask = {
   dueDate: string | null;
   assignee: { id: string; name: string } | null;
   labels: { id: string; name: string; color: string }[];
+  commentCount: number;
 };
 
 export type BoardMember = { id: string; name: string };

@@ -13,6 +13,7 @@ export const boardTaskSelect = {
   dueDate: true,
   assignee: { select: { id: true, name: true } },
   labels: { select: { label: { select: { id: true, name: true, color: true } } } },
+  _count: { select: { comments: true } },
 } satisfies Prisma.TaskSelect;
 
 type BoardTaskRow = Prisma.TaskGetPayload<{ select: typeof boardTaskSelect }>;
@@ -28,6 +29,7 @@ export function toBoardTask(row: BoardTaskRow): BoardTask {
     dueDate: row.dueDate ? row.dueDate.toISOString().slice(0, 10) : null,
     assignee: row.assignee,
     labels: row.labels.map((l) => l.label),
+    commentCount: row._count.comments,
   };
 }
 
