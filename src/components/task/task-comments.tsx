@@ -36,8 +36,8 @@ export function TaskComments({
   viewerId: string;
 }) {
   return (
-    <section aria-labelledby="comments-heading" className="flex flex-col gap-3 border-t pt-5">
-      <h3 id="comments-heading" className="text-sm font-medium">
+    <section aria-labelledby="comments-heading" className="flex flex-col gap-4 border-t border-border/40 pt-6">
+      <h3 id="comments-heading" className="text-sm font-semibold tracking-tight">
         Yorumlar <span className="text-muted-foreground">({comments.length})</span>
       </h3>
       {comments.length > 0 && (
@@ -124,7 +124,9 @@ function CommentItem({ slug, comment, isOwn }: { slug: string; comment: TaskComm
             </div>
           </div>
         ) : (
-          <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{comment.body}</p>
+          <p className="w-fit max-w-full rounded-xl rounded-tl-sm bg-muted/50 px-3.5 py-2 text-sm leading-relaxed break-words whitespace-pre-wrap ring-1 ring-border/30 dark:bg-white/[0.04]">
+            {comment.body}
+          </p>
         )}
         {isOwn && !editing && (
           <div className="flex gap-1">

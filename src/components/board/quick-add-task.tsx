@@ -37,7 +37,7 @@ export function QuickAddTask({
       <Button
         variant="ghost"
         size="sm"
-        className="justify-start text-muted-foreground"
+        className="justify-start text-muted-foreground transition-colors duration-200 hover:bg-background/70 hover:text-foreground dark:hover:bg-white/[0.04]"
         onClick={() => setOpen(true)}
       >
         <PlusIcon />
@@ -62,7 +62,7 @@ export function QuickAddTask({
         e.preventDefault();
         void submit();
       }}
-      className="flex flex-col gap-2 rounded-md border bg-card p-2 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
+      className="flex flex-col gap-2 rounded-lg bg-card p-2.5 shadow-[0_4px_12px_rgba(15,23,42,0.06)] ring-1 ring-border/60 transition-shadow duration-200 focus-within:ring-2 focus-within:ring-ring/60 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
     >
       <label htmlFor={`quick-add-${status}`} className="sr-only">
         {STATUS_LABELS[status]} sütununa görev başlığı

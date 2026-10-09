@@ -68,8 +68,8 @@ function WorkspaceMark({ name, small }: { name: string; small?: boolean }) {
       aria-hidden
       className={
         small
-          ? "flex size-5 shrink-0 items-center justify-center rounded bg-sidebar-primary text-[10px] font-semibold text-sidebar-primary-foreground"
-          : "flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground"
+          ? "flex size-5 shrink-0 items-center justify-center rounded bg-linear-to-br from-sidebar-primary to-sidebar-primary/70 text-[10px] font-semibold text-sidebar-primary-foreground"
+          : "flex size-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-sidebar-primary to-sidebar-primary/70 text-xs font-semibold text-sidebar-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_2px_8px_-2px_var(--color-sidebar-primary)]"
       }
     >
       {initials(name)}

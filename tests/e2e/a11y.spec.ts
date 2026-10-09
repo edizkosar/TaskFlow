@@ -32,8 +32,27 @@ for (const scheme of ["light", "dark"] as const) {
     expect(await violations(page), "board").toEqual([]);
 
     await page.goto(`/w/${slug}/p/MOB?task=MOB-1`);
-    await expect(page.getByRole("dialog").getByLabel("Başlık")).toBeVisible();
+    const panel = page.getByRole("dialog");
+    await expect(panel.getByLabel("Başlık")).toBeVisible();
     expect(await violations(page), "task panel").toEqual([]);
+
+    // Give the card every metadata chip (urgent priority, overdue date, label) to check their contrast.
+    await panel.getByRole("combobox", { name: "Öncelik" }).click();
+    await page.getByRole("option", { name: "Acil" }).click();
+    await panel.getByLabel("Bitiş tarihi").fill("2020-01-15");
+    await panel.getByLabel("Bitiş tarihi").press("Enter");
+    await panel.getByRole("button", { name: /^Etiketler:/ }).click();
+    await page.getByLabel("Yeni etiket adı").fill("Tasarım");
+    await page.getByLabel("Yeni etiket adı").press("Enter");
+    await expect(page.getByRole("checkbox", { name: "Tasarım" })).toBeChecked();
+    expect(await violations(page), "label picker").toEqual([]);
+    await page.keyboard.press("Escape");
+    await page.goto(`/w/${slug}/p/MOB`);
+    const chips = todo.getByTestId("task-card");
+    await expect(chips.getByText("Tasarım")).toBeVisible();
+    await expect(chips.getByText("Acil")).toBeAttached();
+    await expect(chips).toContainText("15 Oca");
+    expect(await violations(page), "board with chips").toEqual([]);
 
     await page.goto(`/w/${slug}/settings`);
     expect(await violations(page), "settings").toEqual([]);

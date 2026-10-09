@@ -59,7 +59,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
     <article className="flex flex-col">
       <PanelHeader slug={slug} taskId={taskId} serverTaskId={serverTask.id} canDelete={canDelete} title={task.title} />
 
-      <div className="flex flex-col gap-6 px-6 pb-8">
+      <div className="flex flex-col gap-7 px-6 pb-10">
         <TitleField
           key={serverTask.title}
           value={task.title}
@@ -68,8 +68,8 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
           }
         />
 
-        <dl className="grid grid-cols-[7rem_1fr] items-center gap-x-3 gap-y-2 text-sm">
-          <dt className="text-muted-foreground">Durum</dt>
+        <dl className="grid grid-cols-[7rem_1fr] items-center gap-x-3 gap-y-2.5 rounded-xl bg-muted/30 p-4 text-sm ring-1 ring-border/40 dark:bg-white/[0.02]">
+          <dt className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">Durum</dt>
           <dd>
             <Select
               value={task.status}
@@ -85,7 +85,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
                 );
               }}
             >
-              <SelectTrigger size="sm" aria-label="Durum" className="w-44">
+              <SelectTrigger size="sm" aria-label="Durum" className="w-44 border-transparent bg-transparent shadow-none transition-colors duration-200 hover:bg-background/80 dark:bg-transparent dark:hover:bg-white/[0.05]">
                 <StatusIcon status={task.status} />
                 <SelectValue />
               </SelectTrigger>
@@ -99,7 +99,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
             </Select>
           </dd>
 
-          <dt className="text-muted-foreground">Öncelik</dt>
+          <dt className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">Öncelik</dt>
           <dd>
             <Select
               value={task.priority}
@@ -110,7 +110,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
                 void saveTaskPatch(serverTask, { priority }, () => updateTask(slug, serverTask.id, { priority }));
               }}
             >
-              <SelectTrigger size="sm" aria-label="Öncelik" className="w-44">
+              <SelectTrigger size="sm" aria-label="Öncelik" className="w-44 border-transparent bg-transparent shadow-none transition-colors duration-200 hover:bg-background/80 dark:bg-transparent dark:hover:bg-white/[0.05]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -123,7 +123,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
             </Select>
           </dd>
 
-          <dt className="text-muted-foreground">Atanan</dt>
+          <dt className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">Atanan</dt>
           <dd>
             <Select
               value={task.assignee?.id ?? UNASSIGNED}
@@ -139,7 +139,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
                 );
               }}
             >
-              <SelectTrigger size="sm" aria-label="Atanan" className="w-44">
+              <SelectTrigger size="sm" aria-label="Atanan" className="w-44 border-transparent bg-transparent shadow-none transition-colors duration-200 hover:bg-background/80 dark:bg-transparent dark:hover:bg-white/[0.05]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -152,7 +152,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
             </Select>
           </dd>
 
-          <dt className="text-muted-foreground">
+          <dt className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
             <label htmlFor="task-due-date">Bitiş tarihi</label>
           </dt>
           <dd>
@@ -165,7 +165,7 @@ export function TaskPanelContent({ slug, projectKey, task: serverTask, members, 
             />
           </dd>
 
-          <dt className="text-muted-foreground">Etiketler</dt>
+          <dt className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">Etiketler</dt>
           <dd>
             <LabelPicker
               slug={slug}
@@ -255,7 +255,7 @@ function PanelHeader({
   }
 
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-1 border-b bg-popover px-4 py-2">
+    <header className="sticky top-0 z-10 flex items-center gap-1 border-b border-border/40 bg-background/70 px-5 py-2.5 backdrop-blur-md">
       <span className="font-mono text-xs text-muted-foreground" translate="no">
         {taskId}
       </span>
@@ -333,7 +333,7 @@ function TitleField({ value, onSave }: { value: string; onSave: (title: string) 
             requestAnimationFrame(() => (e.target as HTMLTextAreaElement).blur());
           }
         }}
-        className="field-sizing-content w-full resize-none rounded-md border border-transparent bg-transparent px-1.5 py-1 -mx-1.5 text-xl leading-snug font-semibold tracking-tight outline-none hover:border-border focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="field-sizing-content w-full resize-none rounded-md border border-transparent bg-transparent px-1.5 py-1 -mx-1.5 text-2xl leading-tight font-semibold tracking-tight outline-none transition-colors duration-200 hover:border-border/60 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       />
     </div>
   );
@@ -375,7 +375,7 @@ function DescriptionField({ value, onSave }: { value: string; onSave: (descripti
         placeholder="Açıklama ekle…"
         maxLength={10_000}
         aria-describedby="task-description-hint"
-        className="field-sizing-content min-h-24 w-full resize-none rounded-md border border-transparent bg-transparent px-1.5 py-1 -mx-1.5 text-sm leading-relaxed outline-none placeholder:text-muted-foreground hover:border-border focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="field-sizing-content min-h-24 w-full resize-none rounded-md border border-transparent bg-transparent px-1.5 py-1 -mx-1.5 text-sm leading-relaxed outline-none transition-colors duration-200 placeholder:text-muted-foreground hover:border-border/60 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       />
       <p id="task-description-hint" className={cn("text-xs text-muted-foreground", saving && "animate-pulse")}>
         {saving ? "Kaydediliyor…" : "Kaydetmek için Ctrl+Enter ya da alanın dışına tıkla. Esc değişikliği geri alır."}

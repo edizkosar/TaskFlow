@@ -363,7 +363,8 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
         },
       }}
     >
-      <div className="flex min-h-0 flex-1 gap-3 overflow-x-auto p-3">
+      {/* Faint dot grid behind the columns (decorative). */}
+      <div className="flex min-h-0 flex-1 gap-4 overflow-x-auto bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] [background-size:18px_18px] p-4 dark:bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)]">
         {TASK_STATUSES.map((status) => (
           <BoardColumn
             key={status}

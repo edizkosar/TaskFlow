@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AuthStage, Brand, glassCard } from "@/components/brand";
 import { InviteActions } from "@/components/workspace/invite-actions";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,10 +95,10 @@ function InviteShell({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
+    <AuthStage>
       <div className="flex w-full max-w-md flex-col gap-6">
-        <p className="self-center text-lg font-semibold tracking-tight">TaskFlow</p>
-        <Card>
+        <Brand className="self-center" />
+        <Card className={glassCard}>
           <CardHeader>
             <CardTitle>
               <h1 className="text-xl">{title}</h1>
@@ -107,6 +108,6 @@ function InviteShell({
           {children}
         </Card>
       </div>
-    </main>
+    </AuthStage>
   );
 }

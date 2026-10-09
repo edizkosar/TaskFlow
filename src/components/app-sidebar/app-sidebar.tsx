@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { LABEL_COLORS, labelColorClass } from "@/lib/labels";
 import { hasRole, type Role } from "@/lib/roles";
 import { OPEN_PALETTE_EVENT } from "@/lib/shortcuts";
 
@@ -133,12 +134,15 @@ export function AppSidebar({
   );
 }
 
-/** Square badge with the project key's first letter, sized like a sidebar icon. */
+const MARK_COLORS = Object.keys(LABEL_COLORS).filter((c) => c !== "gray");
+
+/** Square badge with the project key's first letter; color derived from the key. */
 function ProjectKeyMark({ projectKey }: { projectKey: string }) {
+  const hash = [...projectKey].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   return (
     <span
       aria-hidden
-      className="flex size-4 shrink-0 items-center justify-center rounded-[4px] bg-sidebar-accent font-mono text-[10px] leading-none font-semibold text-sidebar-accent-foreground ring-1 ring-sidebar-border"
+      className={`flex size-4 shrink-0 items-center justify-center rounded-[4px] font-mono text-[10px] leading-none font-semibold ring-1 ring-inset ${labelColorClass(MARK_COLORS[hash % MARK_COLORS.length])}`}
     >
       {projectKey[0]}
     </span>

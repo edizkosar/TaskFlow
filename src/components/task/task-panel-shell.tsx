@@ -26,7 +26,14 @@ export function TaskPanelShell({ children }: { children: React.ReactNode }) {
         side="right"
         // The header has its own close button.
         showCloseButton={false}
-        className="w-full gap-0 overflow-y-auto overscroll-contain p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-xl"
+        className={[
+          "w-full gap-0 overflow-y-auto overscroll-contain p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-xl",
+          // Frosted glass panel with a soft leading shadow.
+          "border-border/40 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80",
+          "shadow-[-24px_0_60px_-24px_rgba(15,23,42,0.3)] dark:shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.8)]",
+          // Smooth slide in from the right (Base UI starting/ending styles).
+          "duration-300 ease-out data-[side=right]:data-ending-style:translate-x-16 data-[side=right]:data-starting-style:translate-x-16",
+        ].join(" ")}
       >
         {/* The body renders the visible title; these name the dialog until it loads. */}
         <SheetTitle className="sr-only">{task ?? "Görev"}</SheetTitle>

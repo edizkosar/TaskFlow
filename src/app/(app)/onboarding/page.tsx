@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AuthStage, Brand, glassCard } from "@/components/brand";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { CreateWorkspaceForm } from "@/components/workspace/create-workspace-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,10 +15,10 @@ export default async function OnboardingPage() {
   const isFirst = workspaces.length === 0;
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
+    <AuthStage>
       <div className="flex w-full max-w-md flex-col gap-6">
-        <p className="self-center text-lg font-semibold tracking-tight">TaskFlow</p>
-        <Card>
+        <Brand className="self-center" />
+        <Card className={glassCard}>
           <CardHeader>
             <CardTitle>
               <h1 className="text-xl">{isFirst ? "İlk workspace'ini oluştur" : "Yeni workspace"}</h1>
@@ -45,6 +46,6 @@ export default async function OnboardingPage() {
           </Link>
         )}
       </div>
-    </main>
+    </AuthStage>
   );
 }

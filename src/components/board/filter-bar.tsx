@@ -51,7 +51,11 @@ export function FilterBar({
   const labelItems = [{ value: ALL, label: "Tüm etiketler" }, ...labels.map((l) => ({ value: l.id, label: l.name }))];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b px-3 py-2" role="toolbar" aria-label="Pano filtreleri">
+    <div
+      className="flex flex-wrap items-center gap-2 border-b border-border/40 bg-background/60 px-4 py-2 backdrop-blur-md"
+      role="toolbar"
+      aria-label="Pano filtreleri"
+    >
       <Select
         value={filters.assignee ?? ALL}
         onValueChange={(v) => setParam("assignee", v)}
