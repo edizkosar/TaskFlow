@@ -26,7 +26,7 @@ export function TaskPanelShell({ children }: { children: React.ReactNode }) {
         side="right"
         // The header has its own close button.
         showCloseButton={false}
-        className="w-full gap-0 overflow-y-auto p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-xl"
+        className="w-full gap-0 overflow-y-auto overscroll-contain p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-xl"
       >
         {/* The body renders the visible title; these name the dialog until it loads. */}
         <SheetTitle className="sr-only">{task ?? "Görev"}</SheetTitle>

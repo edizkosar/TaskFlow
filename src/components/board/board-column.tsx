@@ -20,6 +20,7 @@ export function BoardColumn({
   filtered,
   onCreate,
   onOpen,
+  quickAddRequest,
 }: {
   status: TaskStatus;
   tasks: BoardTask[];
@@ -27,6 +28,8 @@ export function BoardColumn({
   filtered: boolean;
   onCreate: (status: TaskStatus, title: string) => Promise<boolean>;
   onOpen: (task: BoardTask) => void;
+  /** Increments to ask this column's quick add to open. */
+  quickAddRequest: number;
 }) {
   // The whole column is a drop target so empty columns accept cards.
   const { setNodeRef, isOver } = useDroppable({ id: columnId(status), data: { type: "column", status } });
@@ -63,7 +66,7 @@ export function BoardColumn({
             {filtered ? "Filtreye uyan görev yok" : "Görev yok"}
           </p>
         )}
-        <QuickAddTask status={status} onCreate={onCreate} />
+        <QuickAddTask status={status} onCreate={onCreate} openRequest={quickAddRequest} />
       </div>
     </section>
   );

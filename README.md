@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow
 
-## Getting Started
+Ekipler için Linear tarzı proje ve görev yönetimi: workspace'ler, roller ve davetler, proje bazlı Kanban panosu, görev detay paneli, yorumlar ve komut paleti.
 
-First, run the development server:
+**Teknoloji:** Next.js 16 (App Router, Server Actions) · TypeScript · Tailwind CSS 4 · shadcn/ui (Base UI) · Prisma 7 + Postgres (Neon) · Better Auth · dnd-kit · Playwright
+
+## Özellikler
+
+- E-posta/şifre ile kayıt ve giriş
+- Workspace oluşturma, link ile davet, roller (sahip / yönetici / üye)
+- Projeler ve `MOB-12` biçiminde görev numaraları
+- Kanban: sürükle-bırak (fare, dokunmatik, klavye), iyimser güncelleme, filtreler (URL'de)
+- Görev paneli (`?task=MOB-12`): satır içi düzenleme, durum, öncelik, atama, bitiş tarihi, etiketler, yorumlar
+- Komut paleti (Ctrl/Cmd+K) ve kısayollar (`C` yeni görev, `Esc` kapat)
+- Açık/koyu tema, Türkçe arayüz, WCAG 2.1 AA taraması E2E testlerinde
+
+## Kurulum
+
+Gereksinimler: Node.js 24+, bir Postgres veritabanı (ör. [Neon](https://neon.tech)).
+
+```bash
+npm install
+```
+
+`.env.example` dosyasını `.env.local` olarak kopyalayıp değerleri doldur (bu dosya git'e girmez):
+
+| Değişken | Açıklama |
+|---|---|
+| `DATABASE_URL` | Pooled bağlantı (uygulama) |
+| `DIRECT_URL` | Direct bağlantı (migration) |
+| `BETTER_AUTH_SECRET` | En az 32 bayt rastgele değer |
+| `BETTER_AUTH_URL` | `http://localhost:3000` |
+
+```bash
+npm run db:deploy
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uygulama http://localhost:3000 adresinde açılır.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Komutlar
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Komut | Ne yapar |
+|---|---|
+| `npm run dev` | Geliştirme sunucusu |
+| `npm run build` / `npm start` | Production build ve sunucu |
+| `npm run lint` | ESLint |
+| `npm run test:e2e` | Playwright E2E testleri (production build, port 3100) |
+| `npm run db:migrate` | Yeni migration oluştur ve uygula |
+| `npm run db:studio` | Prisma Studio |
 
-## Learn More
+E2E testleri varsayılan olarak `.env.local`'daki veritabanına yazar. Ayrı bir test veritabanı için `.env.test.local` dosyasına `DATABASE_URL` ve `DIRECT_URL` gir.
 
-To learn more about Next.js, take a look at the following resources:
+## Belgeler
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [docs/PLAN.md](docs/PLAN.md): mimari, veri modeli, yetkilendirme, fazlar ve riskler
+- [CLAUDE.md](CLAUDE.md): kod yazarken uyulan kurallar ve proje notları

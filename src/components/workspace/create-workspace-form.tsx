@@ -42,6 +42,9 @@ export function CreateWorkspaceForm() {
             <Input
               id="slug"
               name="slug"
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
               value={slug}
               onChange={(e) => {
                 setSlugTouched(true);

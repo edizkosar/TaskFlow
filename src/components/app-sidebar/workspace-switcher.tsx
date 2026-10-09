@@ -2,7 +2,6 @@
 
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -21,14 +20,6 @@ import { setActiveWorkspace } from "@/server/workspaces";
 type Workspace = { id: string; name: string; slug: string; role: Role };
 
 export function WorkspaceSwitcher({ current, workspaces }: { current: Workspace; workspaces: Workspace[] }) {
-  const router = useRouter();
-
-  function open(slug: string) {
-    router.push(`/w/${slug}`);
-    // Fire-and-forget: only affects where "/" lands next time.
-    void setActiveWorkspace(slug);
-  }
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -47,7 +38,12 @@ export function WorkspaceSwitcher({ current, workspaces }: { current: Workspace;
             <DropdownMenuGroup>
               <DropdownMenuLabel>Workspace&apos;ler</DropdownMenuLabel>
               {workspaces.map((w) => (
-                <DropdownMenuItem key={w.id} onClick={() => open(w.slug)}>
+                <DropdownMenuItem
+                  key={w.id}
+                  // A real link: new tab / middle-click work too.
+                  render={<Link href={`/w/${w.slug}`} />}
+                  onClick={() => void setActiveWorkspace(w.slug)}
+                >
                   <WorkspaceMark name={w.name} small />
                   <span className="truncate">{w.name}</span>
                   {w.id === current.id && <CheckIcon className="ml-auto" />}

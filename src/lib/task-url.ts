@@ -18,6 +18,11 @@ type Router = { push(href: string, options?: { scroll?: boolean }): void; replac
 // True when the open panel was opened by an in-app push, so closing can go Back.
 let openedInApp = false;
 
+/** For navigations that land on a task in another page: closing must not go Back. */
+export function forgetTaskPanelHistory() {
+  openedInApp = false;
+}
+
 /** Opens a task panel: push, so Back closes it. */
 export function openTaskPanel(router: Router, pathname: string, params: URLSearchParams, task: string) {
   openedInApp = true;

@@ -6,7 +6,8 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   pointerWithin,
   rectIntersection,
   useSensor,
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import { hasActiveFilters, matchesFilters, readFilters } from "@/lib/board-filters";
 import { STATUS_LABELS, TASK_STATUSES, type TaskStatus } from "@/lib/task-status";
 import { compareTasks, type BoardTask } from "@/lib/task-types";
+import { isDialogOpen, isTypingTarget, NEW_TASK_EVENT } from "@/lib/shortcuts";
 import { openTaskPanel } from "@/lib/task-url";
 import { createTask, moveTask } from "@/server/tasks";
 
@@ -87,6 +89,25 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
 
   const [activeId, setActiveId] = useState<string | null>(null);
 
+  // "C" (or the palette's "Yeni görev") opens quick add in the Yapılacak column.
+  const [quickAddRequest, setQuickAddRequest] = useState(0);
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key.toLowerCase() !== "c" || event.ctrlKey || event.metaKey || event.altKey) return;
+      // Not while typing, and not behind an open dialog (task panel, palette).
+      if (isTypingTarget(event.target) || isDialogOpen()) return;
+      event.preventDefault();
+      setQuickAddRequest((n) => n + 1);
+    }
+    const onNewTask = () => setQuickAddRequest((n) => n + 1);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener(NEW_TASK_EVENT, onNewTask);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener(NEW_TASK_EVENT, onNewTask);
+    };
+  }, []);
+
   const columns = useMemo(() => {
     const byStatus = Object.fromEntries(TASK_STATUSES.map((s) => [s, [] as BoardTask[]])) as Columns;
     for (const task of [...tasks].sort(compareTasks)) {
@@ -136,7 +157,18 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
    * column as a "left" candidate, so ArrowLeft would never leave the column.
    */
   const keyboardCoordinates = useCallback<KeyboardCoordinateGetter>((event, args) => {
-    const { active, droppableRects, collisionRect } = args.context;
+    const { active, droppableContainers, collisionRect } = args.context;
+    /**
+     * Live rect of a drop target, scrolled into view first. dnd-kit's keyboard
+     * sensor scrolls instead of moving when the target is off-screen (narrow
+     * screens, long columns), so we bring it on-screen and measure it ourselves.
+     */
+    const reveal = (id: UniqueIdentifier) => {
+      const node = droppableContainers.get(id)?.node.current;
+      if (!node) return null;
+      node.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" });
+      return node.getBoundingClientRect();
+    };
     if (!active || !collisionRect) return undefined;
     const current = live.current.columns;
     const status = TASK_STATUSES.find((s) => current[s].some((t) => t.id === active.id));
@@ -145,7 +177,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
     if (event.code === "ArrowLeft" || event.code === "ArrowRight") {
       event.preventDefault();
       const target = TASK_STATUSES[TASK_STATUSES.indexOf(status) + (event.code === "ArrowRight" ? 1 : -1)];
-      const rect = target && droppableRects.get(columnId(target));
+      const rect = target && reveal(columnId(target));
       if (!rect) return undefined;
       keyboardTarget.current = null; // cross-column: onDragOver places the card
       return { x: rect.left + (rect.width - collisionRect.width) / 2, y: rect.top };
@@ -158,7 +190,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
       const list = current[status];
       const from = keyboardTarget.current ?? active.id;
       const neighbor = list[list.findIndex((t) => t.id === from) + (event.code === "ArrowDown" ? 1 : -1)];
-      const rect = neighbor && droppableRects.get(neighbor.id);
+      const rect = neighbor && reveal(neighbor.id);
       if (!rect) return undefined;
       keyboardTarget.current = neighbor.id;
       return { x: rect.left, y: rect.top };
@@ -169,7 +201,9 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
 
   const sensors = useSensors(
     // A small distance keeps clicks (task panel) from starting a drag.
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    // Touch: press and hold to drag, so swiping still scrolls the board.
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
     // Space picks a card up; Enter is free to open the task panel.
     useSensor(KeyboardSensor, {
       coordinateGetter: keyboardCoordinates,
@@ -339,6 +373,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
             filtered={filtered}
             onCreate={onCreate}
             onOpen={openTask}
+            quickAddRequest={status === "TODO" ? quickAddRequest : 0}
           />
         ))}
       </div>

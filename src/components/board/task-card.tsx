@@ -35,27 +35,30 @@ export function SortableTaskCard({
     disabled: task.id.startsWith("temp-"),
   });
 
+  // The <li> stays a plain list item; dnd-kit's role="button" goes on the inner element.
   return (
-    <li
-      ref={setNodeRef}
-      style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={cn("list-none", isDragging && "opacity-40")}
-      data-testid="task-card"
-      data-task-id={task.id}
-      {...attributes}
-      {...listeners}
-      // Click / Enter opens the panel. Ignored while any drag is in progress
-      // (Enter also drops a keyboard drag; a pointer drag ends with a click).
-      onClick={() => {
-        if (!active && !task.id.startsWith("temp-")) onOpen(task);
-      }}
-      onKeyDown={(event) => {
-        listeners?.onKeyDown?.(event);
-        if (event.key === "Enter" && !active && !event.defaultPrevented && !task.id.startsWith("temp-")) onOpen(task);
-      }}
-      aria-roledescription="sürüklenebilir görev"
-    >
-      <TaskCardContent task={task} projectKey={projectKey} />
+    <li className="list-none">
+      <div
+        ref={setNodeRef}
+        style={{ transform: CSS.Translate.toString(transform), transition }}
+        className={cn("rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50", isDragging && "opacity-40")}
+        data-testid="task-card"
+        data-task-id={task.id}
+        {...attributes}
+        {...listeners}
+        // Click / Enter opens the panel. Ignored while any drag is in progress
+        // (Enter also drops a keyboard drag; a pointer drag ends with a click).
+        onClick={() => {
+          if (!active && !task.id.startsWith("temp-")) onOpen(task);
+        }}
+        onKeyDown={(event) => {
+          listeners?.onKeyDown?.(event);
+          if (event.key === "Enter" && !active && !event.defaultPrevented && !task.id.startsWith("temp-")) onOpen(task);
+        }}
+        aria-roledescription="sürüklenebilir görev"
+      >
+        <TaskCardContent task={task} projectKey={projectKey} />
+      </div>
     </li>
   );
 }
@@ -83,7 +86,7 @@ export function TaskCardContent({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="font-mono text-xs text-muted-foreground">
+        <span className="font-mono text-xs text-muted-foreground" translate="no">
           {isTemp ? `${projectKey}-…` : `${projectKey}-${task.number}`}
         </span>
         {task.assignee && (

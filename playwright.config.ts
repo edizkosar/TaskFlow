@@ -10,6 +10,9 @@ const testEnv = loadEnv({ path: ".env.test.local", processEnv: {}, quiet: true }
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  // Remote DB (Neon) + serialized Server Actions: allow for latency under parallel load.
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

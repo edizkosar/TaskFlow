@@ -38,7 +38,9 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
   return (
     <div className="flex h-svh min-h-0 flex-col">
       <PageHeader title={project.name}>
-        <span className="rounded border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">{project.key}</span>
+        <span className="rounded border px-1.5 py-0.5 font-mono text-xs text-muted-foreground" translate="no">
+          {project.key}
+        </span>
         {hasRole(role, "admin") && (
           <ProjectActions
             slug={slug}
@@ -51,6 +53,8 @@ export default async function ProjectPage({ params, searchParams }: PageProps<"/
       )}
       <FilterBar members={members} labels={labels} currentUserId={session.user.id} />
       <BoardContainer
+        // Fresh board per project: no drag preview or pending creates carry over.
+        key={project.id}
         slug={slug}
         project={{ id: project.id, key: project.key }}
         tasks={tasks}

@@ -10,7 +10,7 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 
 - `npm run dev` — dev server on http://localhost:3000 (also `.claude/launch.json` → `taskflow-dev`)
 - `npm run lint` / `npm run build` — run both before considering a change done
-- `npm run test:e2e` — Playwright Test (Edge) against a production build on :3100 (Next allows only one `next dev` per project)
+- `npm run test:e2e` — Playwright Test (Edge) against a production build on :3100 (Next allows only one `next dev` per project). Includes axe WCAG 2.1 AA scans (`tests/e2e/a11y.spec.ts`); keep them green when changing UI.
 - `npm run db:migrate` — create/apply a migration (uses `DIRECT_URL`); `npm run db:generate` regenerates the client into `src/generated/prisma` (gitignored)
 - `npm run auth:generate` — regenerate Better Auth models into `prisma/schema.prisma`. It **overwrites the whole file**: copy app models back afterwards or edit auth models by hand.
 
@@ -31,6 +31,9 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 - **Optimistic updates:** apply the change immediately, then call the Server Action; on `{ ok: false }` or a throw, undo and `toast.error`. On the board, confirmed-but-not-yet-refreshed changes live in `src/components/board/optimistic-store.ts` (module store, not component state): a move is stored as from → to and only overrides server data that still shows `from`, so stale payloads can't undo it and other users' changes still win. Drag preview is component state; in-flight creates are a separate `pending` list. Wrap saves in `boardStore.track()` (warns before unload mid-save). Don't use `useOptimistic` for drag-and-drop: it snaps back when the transition ends.
 - **dnd-kit gotchas:** handlers can run from an earlier render, so read board data from refs (`live.current`); the board uses its own collision detection (column first, then closest card) and keyboard coordinate getter (Left/Right = column, Up/Down = slot). In E2E keyboard drags, wait for `aria-pressed="true"` and a frame between keys (`keyboardMove` in tests/e2e/board.spec.ts), and wait for the save POST before `page.reload()`.
 - **Ordering (fractional indexing):** `Task.position` is a string key from `generateKeyBetween(before, after)` (`fractional-indexing` package). Never hand-roll midpoints. End of column = `generateKeyBetween(last, null)`; empty column = `generateKeyBetween(null, null)`. The column uses `COLLATE "C"` (byte order, matches JS `<`); always sort by `position` then `id` (ties are possible under concurrent moves). Moving a task updates only that row.
+- **Reads from the client go through Route Handlers (GET), not Server Actions.** Actions are queued one at a time; GETs run in parallel and can be aborted (see `src/app/api/w/[slug]/search/route.ts`). Route handlers authorize themselves (session + membership, 404 for non-members).
+- **Turkish search:** fold with `foldForSearch` (`src/lib/search.ts`) on the client and `translate(lower(col), 'ı', 'i')` in SQL; the DB collation (C.UTF-8) doesn't match I↔ı.
+- **Shortcuts:** global keys check `isTypingTarget` and `isDialogOpen` (`src/lib/shortcuts.ts`); cross-component triggers use window events (`OPEN_PALETTE_EVENT`, `NEW_TASK_EVENT`).
 - **URL is the UI state:** filters and the open task live in search params (`?assignee=…&label=…&task=MOB-12`), read with `useSearchParams`, written with the router. Opening/closing the task panel uses `router.push` (Back closes it); changing filters uses `router.replace` (no history spam). Always `{ scroll: false }`. No global store (Zustand etc.). MVP loads all tasks of a project and filters on the client.
 
 ## Skills

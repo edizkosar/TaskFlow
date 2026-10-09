@@ -109,6 +109,19 @@ test("görev ekleme, sürükle-bırak ve klavyeyle taşıma kalıcı", async ({ 
   await context.close();
 });
 
+test("dar ekranda klavyeyle görünmeyen sütuna taşıma", async ({ browser }) => {
+  const { page, context } = await setUpBoard(browser);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await addTasks(page, "Backlog", ["Mobilde taşınacak"]);
+
+  // Yapılıyor is two columns to the right, outside the horizontally scrolled board.
+  await keyboardMove(page, "MOB-1", ["ArrowRight", "ArrowRight"]);
+  await expect.poll(() => idsIn(page, "Yapılıyor")).toEqual(["MOB-1"]);
+  await expect(card(page, "MOB-1")).toBeInViewport();
+
+  await context.close();
+});
+
 test("filtreler URL'de tutulur ve paylaşılabilir", async ({ browser }) => {
   const { page, context, slug } = await setUpBoard(browser);
   await addTasks(page, "Backlog", ["Atanmamış görev"]);

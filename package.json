@@ -24,6 +24,7 @@
     "@prisma/client": "7.10.0",
     "better-auth": "1.7.7",
     "class-variance-authority": "^0.7.1",
+    "cmdk": "^1.1.1",
     "cn": "^0.4.0",
     "fractional-indexing": "4.0.0",
     "lucide-react": "^1.54.0",
@@ -39,6 +40,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

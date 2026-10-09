@@ -256,7 +256,9 @@ function PanelHeader({
 
   return (
     <header className="sticky top-0 z-10 flex items-center gap-1 border-b bg-popover px-4 py-2">
-      <span className="font-mono text-xs text-muted-foreground">{taskId}</span>
+      <span className="font-mono text-xs text-muted-foreground" translate="no">
+        {taskId}
+      </span>
       <div className="ml-auto flex items-center gap-1">
         <Button variant="ghost" size="icon-sm" onClick={copyLink} title="Linki kopyala">
           <LinkIcon />

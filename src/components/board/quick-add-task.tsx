@@ -1,7 +1,7 @@
 "use client";
 
 import { PlusIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { STATUS_LABELS, type TaskStatus } from "@/lib/task-status";
@@ -10,13 +10,27 @@ import { STATUS_LABELS, type TaskStatus } from "@/lib/task-status";
 export function QuickAddTask({
   status,
   onCreate,
+  openRequest,
 }: {
   status: TaskStatus;
   onCreate: (status: TaskStatus, title: string) => Promise<boolean>;
+  /** Increments when a shortcut asks to open this form. */
+  openRequest: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [lastRequest, setLastRequest] = useState(openRequest);
+  if (openRequest !== lastRequest) {
+    setLastRequest(openRequest);
+    if (openRequest > 0) setOpen(true);
+  }
   const [title, setTitle] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Also focus when the form is already open (or a closing dialog returned focus elsewhere).
+  useEffect(() => {
+    if (openRequest === 0) return;
+    const frame = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [openRequest]);
 
   if (!open) {
     return (
@@ -48,7 +62,7 @@ export function QuickAddTask({
         e.preventDefault();
         void submit();
       }}
-      className="flex flex-col gap-2 rounded-md border bg-card p-2"
+      className="flex flex-col gap-2 rounded-md border bg-card p-2 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
     >
       <label htmlFor={`quick-add-${status}`} className="sr-only">
         {STATUS_LABELS[status]} sütununa görev başlığı

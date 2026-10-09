@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -21,6 +21,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: { default: "TaskFlow", template: "%s · TaskFlow" },
   description: "Ekipler için proje ve görev yönetimi",
+};
+
+// Browser UI color; matches --background in globals.css.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fcfcfd" },
+    { media: "(prefers-color-scheme: dark)", color: "#16171b" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

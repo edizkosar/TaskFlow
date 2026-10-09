@@ -36,6 +36,9 @@ export function InviteForm({ slug }: { slug: string }) {
             id="invite-email"
             name="email"
             type="email"
+            // Someone else's address: don't offer the user's own.
+            autoComplete="off"
+            spellCheck={false}
             placeholder="ekip.arkadasi@ornek.com"
             aria-invalid={state.status === "error"}
             required

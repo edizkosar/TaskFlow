@@ -200,7 +200,7 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 - Klavye: kartta Enter paneli açar, boşluk sürüklemeyi başlatır. Panel uygulama içinden açıldıysa kapatma "geri" ile olur; paylaşılan linkle açıldıysa yalnızca `task` parametresi kaldırılır.
 - Yetki: yorum düzenleme/silme yalnızca yazar (sunucuda doğrulanır, E2E testinde sahte istekle denendi). Görev silme: görevi oluşturan ya da yönetici. Etiketi her üye oluşturabilir.
 
-### Faz 5 — Cila ve doğrulama
+### Faz 5 — Cila ve doğrulama ✅
 
 - Komut paleti (Ctrl+K): görev ara, projeye git, yeni görev
 - Kısayollar: `C` yeni görev, `Esc` paneli kapat
@@ -208,6 +208,15 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 - Seed verisiyle tam E2E senaryosu, koyu/açık mod ve mobil genişlik görsel kontrolü
 
 **Kabul:** E2E paketi yeşil; inceleme bulguları kapatıldı.
+
+**Uygulama notları:**
+- Görev araması `GET /api/w/:slug/search?q=` (Route Handler; Server Action değil, çünkü action'lar sıraya alınır). 200 ms debounce, eski istek `AbortController` ile iptal, en az 2 karakter, en fazla 20 sonuç, `MOB-12` tam eşleşme. Türkçe katlama: veritabanı (`C.UTF-8`) İ↔i eşler ama I↔ı eşlemez; iki taraf da `ı`→`i` katlanır.
+- Projeler/komutlar istemcide aynı katlamayla filtrelenir. Kenar menüde "Ara" butonu (Ctrl K).
+- `C` yalnızca yazı alanında değilken ve açık pencere yokken çalışır; palet "Yeni görev" ile aynı işi yapar.
+- Dar ekranda klavyeyle sürükleme düzeltildi (hedef önce görünür alana kaydırılır).
+- İnceleme düzeltmeleri: içeriğe atla linki, `theme-color`, workspace değiştiricide gerçek linkler, dokunmatik sürükleme (basılı tut), `overscroll-contain`, `prefers-reduced-motion`, kimliklerde `translate="no"`, form alanı öznitelikleri, palet için canlı bölge, hızlı ekleme odak halkası. Kart listesi yapısı düzeltildi (`li` > `div[role=button]`). Türkçe cümle düzeni korunduğu için "Title Case" kuralı uygulanmadı.
+- `@axe-core/playwright` ile WCAG 2.1 AA taraması (giriş, pano, panel, ayarlar, palet; açık ve koyu tema) E2E paketine eklendi.
+- Seed betiği yazılmadı: E2E testleri kendi verisini oluşturuyor; demo verisi için gerekirse eklenebilir.
 
 ## 9. Test stratejisi
 
@@ -226,6 +235,9 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 | Gerçek zamanlı güncelleme yok | MVP'de kabul edildi; Faz 2+'da polling veya websocket |
 | Davet e-postası yok | MVP'de link kopyalanır; sonra Resend vb. eklenir |
 | `npm audit`: eslint-config-next zincirinde 5 yüksek (yalnızca dev) | Next.js güncellemelerinde tekrar kontrol |
+| Görev araması `ILIKE '%…%'` indeks kullanamaz | Binlerce görevde `pg_trgm` GIN indeksi (`translate(lower(title),'ı','i')` ifadesi üzerinde) |
+| Panel açılınca sayfa sunucu bileşeni ve pano sorgusu yeniden çalışır | MVP için kabul; gerekirse panel verisi ayrı bir GET ile istemciden yüklenir |
+| E2E testleri geliştirme veritabanına yazar | Neon `test` branch'i + `.env.test.local` |
 
 ## 11. Başlamadan önce kullanıcının yapacakları
 

@@ -59,5 +59,11 @@ export async function createProject(page: Page, name: string, key?: string) {
   if (key) await dialog.getByLabel("Kod").fill(key);
   const finalKey = await dialog.getByLabel("Kod").inputValue();
   await dialog.getByRole("button", { name: "Proje oluştur" }).click();
+  // Wait for the new board's content (the URL changes before it renders), unless the
+  // create failed and the dialog shows an error (e.g. duplicate key).
+  const error = dialog.locator("[data-slot=field-error]");
+  const heading = page.getByRole("heading", { level: 1, name, exact: true });
+  await expect(error.or(heading)).toBeVisible();
+  if (await heading.isVisible()) await expect(page).toHaveURL(new RegExp(`/p/${finalKey}$`));
   return finalKey;
 }

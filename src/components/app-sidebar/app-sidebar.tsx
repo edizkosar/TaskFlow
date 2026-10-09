@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusIcon, SettingsIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -21,6 +21,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { hasRole, type Role } from "@/lib/roles";
+import { OPEN_PALETTE_EVENT } from "@/lib/shortcuts";
 
 import { UserMenu } from "./user-menu";
 import { WorkspaceSwitcher } from "./workspace-switcher";
@@ -49,6 +50,21 @@ export function AppSidebar({
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <WorkspaceSwitcher current={current} workspaces={workspaces} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Ara (Ctrl+K)"
+              onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE_EVENT))}
+              aria-keyshortcuts="Control+K Meta+K"
+            >
+              <SearchIcon />
+              <span>Ara</span>
+              <kbd className="ml-auto rounded border px-1 font-sans text-[10px] text-muted-foreground group-data-[collapsible=icon]:hidden">
+                Ctrl K
+              </kbd>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>

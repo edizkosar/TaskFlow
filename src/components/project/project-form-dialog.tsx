@@ -97,6 +97,9 @@ function ProjectForm({ slug, mode, project, onOpenChange }: Props) {
             <FieldLabel htmlFor="project-key">Kod</FieldLabel>
             <Input
               id="project-key"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
               name="key"
               value={key}
               onChange={(e) => {
