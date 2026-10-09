@@ -22,8 +22,12 @@ async function addTasks(page: Page, columnName: string, titles: string[]) {
   }
   await input.press("Escape");
   // Optimistic cards show "MOB-…" until saved; wait for real numbers so later
-  // steps don't race the creates (matters with a remote DB, e.g. in CI).
-  await expect(col.getByTestId("task-card").locator("span.font-mono", { hasText: "…" })).toHaveCount(0);
+  // steps don't race the creates. Saves are queued one at a time and each one
+  // re-renders the page, so with a far-away DB (CI runs in the US, Neon in
+  // Frankfurt) three creates can take well over 10s.
+  await expect(col.getByTestId("task-card").locator("span.font-mono", { hasText: "…" })).toHaveCount(0, {
+    timeout: 30_000,
+  });
 }
 
 function card(page: Page, id: string): Locator {
