@@ -2,7 +2,9 @@
 
 # TaskFlow
 
-Task management app. Next.js 16 (App Router) + TypeScript + Tailwind CSS 4, npm. Source lives in `src/app/`; import alias `@/*` → `src/*`.
+Team task management app. Next.js 16 (App Router) + TypeScript + Tailwind CSS 4, npm. Source lives in `src/app/`; import alias `@/*` → `src/*`.
+
+Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it; update it first if the plan changes.
 
 ## Commands
 
