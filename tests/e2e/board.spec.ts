@@ -21,6 +21,9 @@ async function addTasks(page: Page, columnName: string, titles: string[]) {
     await expect(col.getByText(title)).toBeVisible();
   }
   await input.press("Escape");
+  // Optimistic cards show "MOB-…" until saved; wait for real numbers so later
+  // steps don't race the creates (matters with a remote DB, e.g. in CI).
+  await expect(col.getByTestId("task-card").locator("span.font-mono", { hasText: "…" })).toHaveCount(0);
 }
 
 function card(page: Page, id: string): Locator {
