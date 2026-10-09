@@ -32,6 +32,6 @@ export default defineConfig({
     url: `${baseURL}/login`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
-    env: { ...testEnv, BETTER_AUTH_URL: baseURL },
+    env: { ...testEnv, BETTER_AUTH_URL: baseURL, E2E_DISABLE_RATE_LIMIT: "1" },
   },
 });

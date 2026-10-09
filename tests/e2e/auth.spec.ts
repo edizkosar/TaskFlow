@@ -1,13 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-function uniqueUser() {
-  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  return {
-    name: "E2E Kullanıcı",
-    email: `e2e-${id}@taskflow.test`,
-    password: `e2e-pass-${id}`,
-  };
-}
+import { uniqueUser } from "./helpers";
 
 test("korumalı sayfa oturum yoksa girişe yönlendirir ve next parametresini korur", async ({ page }) => {
   await page.goto("/w/demo?task=MOB-1");
@@ -18,19 +11,20 @@ test("korumalı sayfa oturum yoksa girişe yönlendirir ve next parametresini ko
 test("kayıt ol → giriş yap → çıkış yap akışı", async ({ page }) => {
   const user = uniqueUser();
 
-  // Sign up lands on the protected home page.
+  // A new user without a workspace lands on onboarding.
   await page.goto("/signup");
   await page.getByLabel("Ad soyad").fill(user.name);
   await page.getByLabel("E-posta").fill(user.email);
   await page.getByLabel("Şifre").fill(user.password);
   await page.getByRole("button", { name: "Hesap oluştur" }).click();
-  await expect(page.getByRole("heading", { name: `Hoş geldin, ${user.name}` })).toBeVisible();
+  await expect(page).toHaveURL("/onboarding");
+  await expect(page.getByRole("heading", { name: "İlk workspace'ini oluştur" })).toBeVisible();
 
   // Signed-in users are bounced away from auth pages.
   await page.goto("/login");
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/onboarding");
 
-  // Sign out.
+  // Sign out from onboarding (no sidebar yet).
   await page.getByRole("button", { name: "Çıkış yap" }).click();
   await expect(page).toHaveURL("/login");
 
@@ -43,7 +37,7 @@ test("kayıt ol → giriş yap → çıkış yap akışı", async ({ page }) => 
   // Correct password signs back in.
   await page.getByLabel("Şifre").fill(user.password);
   await page.getByRole("button", { name: "Giriş yap" }).click();
-  await expect(page.getByRole("heading", { name: `Hoş geldin, ${user.name}` })).toBeVisible();
+  await expect(page).toHaveURL("/onboarding");
 });
 
 test("aynı e-posta ile ikinci kayıt reddedilir", async ({ page, request }) => {

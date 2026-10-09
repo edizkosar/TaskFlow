@@ -16,7 +16,8 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 
 ## Stack notes
 
-- Auth: Better Auth (`src/lib/auth.ts`, client `src/lib/auth-client.ts`); workspaces = organization plugin. `src/proxy.ts` only checks the session cookie; real checks go through `src/server/access.ts`.
+- Auth: Better Auth (`src/lib/auth.ts`, client `src/lib/auth-client.ts`); workspaces = organization plugin. `src/proxy.ts` only checks the session cookie; real checks go through `src/server/access.ts` (`requireSession`, `requireMember(slug, minRole)` → 404 for non-members). Rate limiting is on in production; the E2E server sets `E2E_DISABLE_RATE_LIMIT=1`.
+- Workspace mutations are Server Actions in `src/server/workspaces.ts` that call `auth.api.*` with explicit `organizationId` (the URL slug is the source of truth, not the session's active org). Role rules for the UI live in `src/lib/roles.ts` and mirror Better Auth's server checks.
 - DB: Prisma 7 with `@prisma/adapter-pg`; config in `prisma.config.ts` (loads `.env.local`). Import the client from `@/lib/db`. Pin Prisma versions — npm `latest` points at an 8.0 RC.
 - UI: shadcn/ui `base-nova` style (Base UI primitives, not Radix); `cn` comes from the `cn` package. Add components with `npx shadcn@4.21.4 add <name>`.
 - Never run `prisma init` in this repo: it also writes agent skill files and overwrites `skills-lock.json`.

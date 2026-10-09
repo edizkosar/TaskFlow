@@ -1,15 +1,13 @@
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { requireSession } from "@/server/access";
+import { redirect } from "next/navigation";
 
-// Phase 0 placeholder; Phase 1 replaces this with onboarding / workspace redirect.
+import { listMyWorkspaces, requireSession } from "@/server/access";
+
+/** Sends the user to their active (or first) workspace, or to onboarding. */
 export default async function HomePage() {
-  const { user } = await requireSession();
+  const { user, session } = await requireSession();
+  const workspaces = await listMyWorkspaces(user.id);
+  if (workspaces.length === 0) redirect("/onboarding");
 
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">Hoş geldin, {user.name}</h1>
-      <p className="text-muted-foreground">Oturum açık: {user.email}</p>
-      <SignOutButton />
-    </main>
-  );
+  const active = workspaces.find((w) => w.id === session.activeOrganizationId) ?? workspaces[0];
+  redirect(`/w/${active.slug}`);
 }

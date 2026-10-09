@@ -1,6 +1,8 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { safeNextPath } from "@/lib/auth-errors";
+
 const AUTH_PAGES = ["/login", "/signup"];
 
 // Optimistic check on the session cookie only. Real authorization happens in
@@ -17,7 +19,8 @@ export function proxy(request: NextRequest) {
   }
 
   if (hasSession && isAuthPage) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const next = safeNextPath(request.nextUrl.searchParams.get("next"));
+    return NextResponse.redirect(new URL(next, request.url));
   }
 
   return NextResponse.next();

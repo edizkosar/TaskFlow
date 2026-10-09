@@ -1,17 +1,17 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { authErrorMessage, safeNextPath } from "@/lib/auth-errors";
+import { authErrorMessage } from "@/lib/auth-errors";
 
-export function LoginForm() {
+/** `next` must already be validated with safeNextPath. */
+export function LoginForm({ next }: { next: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -32,7 +32,7 @@ export function LoginForm() {
       return;
     }
 
-    router.replace(safeNextPath(searchParams.get("next")));
+    router.replace(next);
     router.refresh();
   }
 

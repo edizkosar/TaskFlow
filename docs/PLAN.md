@@ -149,7 +149,7 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 
 **Kabul:** Kayıt ol → giriş yap → korumalı sayfaya eriş → çıkış yap akışı E2E testte geçiyor.
 
-### Faz 1 — Workspace ve üyeler
+### Faz 1 — Workspace ve üyeler ✅
 
 - Onboarding: workspace adı + slug
 - Sidebar'da workspace değiştirici
@@ -157,6 +157,8 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 - Davet kabul sayfası
 
 **Kabul:** Kullanıcı A workspace oluşturur, B'yi davet eder; B linkle katılır ve rolüne göre yetkileri doğru.
+
+**Sonraya kalanlar:** workspace adını/adresini değiştirme, workspace silme (owner), üyenin workspace'ten kendisi ayrılması.
 
 ### Faz 2 — Projeler ve uygulama iskeleti
 

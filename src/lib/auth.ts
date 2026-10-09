@@ -12,6 +12,11 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
   },
+  // On by default in production. The E2E server (playwright.config.ts) turns it off
+  // because parallel tests sign up many users from one IP.
+  rateLimit: {
+    enabled: process.env.E2E_DISABLE_RATE_LIMIT === "1" ? false : undefined,
+  },
   plugins: [
     // Workspaces are Better Auth organizations.
     organization({
