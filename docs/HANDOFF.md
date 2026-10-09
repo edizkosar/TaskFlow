@@ -2,7 +2,7 @@
 
 > **Bu belge ne için?** Yeni bir Claude oturumu (ya da yeni bir geliştirici) projeye sıfırdan başladığında, önceki uzun sohbette verilen kararları, nedenlerini ve yaşanan tuzakları kaybetmeden devam edebilsin diye yazıldı. Önce bunu, sonra [`CLAUDE.md`](../CLAUDE.md) (kod kuralları) ve [`docs/PLAN.md`](PLAN.md) (mimari ve faz planı) okunmalı.
 >
-> Son güncelleme: 2026-10-09, commit `8a164ec` sonrası (README galerisi + bu belge).
+> Son güncelleme: 2026-10-09; son kod commit'i `b47fb24` (README galerisi, ekran görüntüsü üretici, bu belge). Proje burada bilerek durduruldu; devam planı §11'de.
 
 ---
 
@@ -146,11 +146,34 @@ docs/PLAN.md                       mimari + fazlar + riskler;  docs/screenshots/
 
 ## 11. Açık işler / sıradaki adımlar
 
-1. **Canlıya alma (Vercel):** Neon'da `production` branch'i + `prisma migrate deploy`; Vercel env değişkenleri (yeni `BETTER_AUTH_SECRET`, gerçek `BETTER_AUTH_URL`); **bölge `fra1`** (DB ile aynı bölge, yoksa her kayıt saniyeler sürer). Dışa açık adım → kontrol listesi + kullanıcı onayı.
-2. **CV görünürlüğü:** depo şu an private; README'deki CI rozeti ve görseller ancak public olunca herkese görünür. Public yapmadan önce geçmişte sır olmadığı tekrar taranmalı (en son tarama temizdi).
-3. Demo verisi/seed betiği yok (screenshots betiği test DB'de demo kurar; canlı demo için ayrı seed + demo hesabı düşünülebilir).
-4. MVP sonrası (CV için opsiyonel): davet e-postası (Resend), şifre sıfırlama, workspace yeniden adlandırma/silme, üyenin ayrılması, liste/takvim görünümü, gerçek zamanlı güncelleme, `pg_trgm` arama indeksi (binlerce görevde).
-5. Küçükler: `npm audit` (yalnızca eslint-config-next zincirinde, dev), `sslmode=verify-full`.
+**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler **yapılmadı**, kullanıcı isteyince sırayla yapılacak. Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
+
+### A. Depoyu public yapmak (kısa, ~5 dk; geri alınamaz, açık onay şart)
+1. Tüm git geçmişini tekrar tara: commit'lenmiş dosya adlarında `.env*` (`.env.example` hariç), `*.local.md`, `.pem`, `auth.json`, `storage-state*` olmamalı; `.env.local` ve `.env.test.local`'daki gerçek değerler (DB şifreleri, hostlar, `BETTER_AUTH_SECRET`) `git log --all -p` içinde geçmemeli. (Son tarama `59ce633`'te temizdi; sonrasında yalnızca kod/doküman eklendi.)
+2. Kullanıcıdan açık "public yap" onayı al (public olan içerik kopyalanabilir; private'a dönmek bunu geri almaz).
+3. `gh repo edit edizkosar/TaskFlow --visibility public --accept-visibility-change-consequences` (tam yol: `C:\Program Files\GitHub CLI\gh.exe`).
+4. README'deki CI rozeti ve görsellerin herkese göründüğünü kontrol et. İsteğe bağlı: depo açıklaması + topic'ler (`nextjs`, `typescript`, `prisma`, `kanban`, `tailwindcss`).
+
+### B. Canlıya alma: Vercel + Neon (uzun, ~30-60 dk; kullanıcı adımları var)
+1. **Kullanıcı:** Vercel hesabı; Neon'da `production` branch'i (dev `main`'den değil, boş/temiz başlaması tercih edilir).
+2. Production DB'ye migration: `DIRECT_URL=<prod direct> npx prisma migrate deploy` (değeri ekrana yazdırmadan).
+3. Vercel projesi: GitHub'dan `edizkosar/TaskFlow` import; **Function region `fra1`** (Neon Frankfurt ile aynı; yoksa her kayıt saniyeler sürer, CI'da ~3,5 sn ölçüldü).
+4. Vercel env: `DATABASE_URL` (prod pooled), `DIRECT_URL` (prod direct), **yeni** `BETTER_AUTH_SECRET` (dev/test ile aynı olmasın), `BETTER_AUTH_URL=https://<alan-adı>`. `E2E_DISABLE_RATE_LIMIT` **eklenmez** (rate limit açık kalmalı).
+5. Build komutu varsayılan (`next build`; `postinstall` Prisma client'ı üretir).
+6. Yayından sonra kontrol: kayıt/giriş, workspace, proje, görev, sürükle-bırak, panel, palet; tarayıcı konsolu temiz; sağlık için ilk istekler `fra1`'de mi.
+7. Dikkat: production'da Better Auth `BETTER_AUTH_URL` gerçek alan adı olmalı (çerezler/redirect). Davet linkleri `window.location.origin` ile oluşur, ek ayar gerekmez.
+
+### C. CV cilası (B'den sonra)
+- README'nin başına canlı demo linki; isteğe bağlı salt-okunur bir **demo hesabı** + seed (şu an seed betiği yok; `tests/screenshots/demo.spec.ts` demo verisini nasıl kuracağını gösterir, Prisma tabanlı bir `prisma/seed.ts` olarak uyarlanabilir).
+- Görselleri yenilemek: `npm run screenshots` (test DB'ye yazar).
+
+### D. Opsiyonel özellikler (CV için şart değil)
+Davet e-postası (Resend), şifre sıfırlama, workspace yeniden adlandırma/silme, üyenin kendi ayrılması, liste/takvim görünümü, gerçek zamanlı güncelleme, `pg_trgm` arama indeksi (binlerce görevde), panel verisini ayrı GET ile yükleyip pano sorgusunun tekrarını önlemek.
+
+### Küçükler (kullanıcı tarafı ya da düşük öncelik)
+- `.env.local` / `.env.test.local`'da `sslmode=require` → `sslmode=verify-full` (pg uyarısını kaldırır; kullanıcı kendisi yapacak).
+- `npm audit`: 5 yüksek uyarı yalnızca `eslint-config-next` zincirinde (dev); Next güncellemelerinde tekrar bak, `npm audit fix --force` kullanma.
+- CI süresi (~5-9 dk) ABD runner ↔ Frankfurt DB gecikmesinden; istenirse ABD bölgesinde ayrı bir Neon test DB'si ile hızlanır.
 
 ## 12. Yeni oturumda hızlı başlangıç
 
