@@ -4,6 +4,21 @@ Ekipler için Linear tarzı proje ve görev yönetimi: workspace'ler, roller ve 
 
 **Teknoloji:** Next.js 16 (App Router, Server Actions) · TypeScript · Tailwind CSS 4 · shadcn/ui (Base UI) · Prisma 7 + Postgres (Neon) · Better Auth · dnd-kit · Playwright
 
+![CI](https://github.com/edizkosar/TaskFlow/actions/workflows/ci.yml/badge.svg)
+
+![Kanban panosu (koyu tema)](docs/screenshots/board-dark.png)
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/panel-dark.png" alt="Görev detay paneli (koyu tema)"></td>
+    <td><img src="docs/screenshots/palette-dark.png" alt="Komut paleti ile görev araması"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/board-light.png" alt="Kanban panosu (açık tema)"></td>
+    <td><img src="docs/screenshots/login-dark.png" alt="Giriş ekranı"></td>
+  </tr>
+</table>
+
 ## Özellikler
 
 - E-posta/şifre ile kayıt ve giriş
@@ -52,6 +67,7 @@ Uygulama http://localhost:3000 adresinde açılır.
 | `npm run test:e2e` | Playwright E2E testleri (production build, port 3100) |
 | `npm run db:migrate` | Yeni migration oluştur ve uygula |
 | `npm run db:studio` | Prisma Studio |
+| `npm run screenshots` | README görüntülerini test veritabanındaki demo panodan yeniden üretir (`docs/screenshots`) |
 
 E2E testleri varsayılan olarak `.env.local`'daki veritabanına yazar. Ayrı bir test veritabanı için `.env.test.local` dosyasına `DATABASE_URL` ve `DIRECT_URL` gir.
 

@@ -34,6 +34,8 @@ function nextSave(page: Page) {
 }
 
 test("panel: düzenleme, panoya yansıma, bana atananlar ve yorumlar", async ({ browser }) => {
+  // Long two-user flow with ~15 saves; with a far-away DB (CI) it needs more than the default.
+  test.setTimeout(180_000);
   const owner = uniqueUser("Sahip");
   const ownerContext = await browser.newContext();
   const page = await ownerContext.newPage();

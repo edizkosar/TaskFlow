@@ -13,8 +13,9 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "auth:generate": "auth generate --config src/lib/auth.ts --output prisma/schema.prisma --yes",
-    "test:e2e": "playwright test",
-    "typecheck": "next typegen && tsc --noEmit"
+    "test:e2e": "playwright test --project=edge",
+    "typecheck": "next typegen && tsc --noEmit",
+    "screenshots": "playwright test --project=screenshots"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

@@ -2,6 +2,8 @@
 
 # TaskFlow
 
+> **New session? Read [docs/HANDOFF.md](docs/HANDOFF.md) first.** It holds the full project context from the original build: the user's goals and preferences (CV/portfolio project, Turkish conversation, approval before risky/outward actions), environment and accounts (no secret values), every architectural decision with its reason, the design system, test/CI setup, the pitfalls we hit, and open next steps. Keep it updated when something important changes.
+
 Team task management app. Next.js 16 (App Router) + TypeScript + Tailwind CSS 4, npm. Source lives in `src/app/`; import alias `@/*` → `src/*`.
 
 Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it; update it first if the plan changes.
@@ -11,7 +13,8 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 - `npm run dev` — dev server on http://localhost:3000 (also `.claude/launch.json` → `taskflow-dev`)
 - `npm run lint` / `npm run typecheck` / `npm run build` — run before considering a change done
 - CI (`.github/workflows/ci.yml`): lint, typecheck, migrate + E2E on every push/PR to `main`, against the Neon `test` branch (repo secrets `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET`). Locally, E2E uses `.env.test.local` (same branch).
-- `npm run test:e2e` — Playwright Test (Edge) against a production build on :3100 (Next allows only one `next dev` per project). Includes axe WCAG 2.1 AA scans (`tests/e2e/a11y.spec.ts`); keep them green when changing UI.
+- `npm run test:e2e` — Playwright `edge` project against a production build on :3100 (Next allows only one `next dev` per project). Includes axe WCAG 2.1 AA scans (`tests/e2e/a11y.spec.ts`); keep them green when changing UI.
+- `npm run screenshots` — regenerates `docs/screenshots/*.png` (README) from a demo workspace in the **test** DB (`tests/screenshots/demo.spec.ts`, Playwright `screenshots` project; not run in CI).
 - `npm run db:migrate` — create/apply a migration (uses `DIRECT_URL`); `npm run db:generate` regenerates the client into `src/generated/prisma` (gitignored)
 - `npm run auth:generate` — regenerate Better Auth models into `prisma/schema.prisma`. It **overwrites the whole file**: copy app models back afterwards or edit auth models by hand.
 
@@ -22,7 +25,7 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 - DB: Prisma 7 with `@prisma/adapter-pg`; config in `prisma.config.ts` (loads `.env.local`). Import the client from `@/lib/db`. Pin Prisma versions — npm `latest` points at an 8.0 RC.
 - Data access: read helpers go in `src/server/queries.ts` (`server-only`, no auth checks; call `requireMember` first). Mutations go in `"use server"` files (`src/server/workspaces.ts`, `src/server/projects.ts`) and must start with `requireMember(slug, minRole)` and scope every query by `organizationId`. Never export read helpers from a `"use server"` file: every export there becomes a public endpoint.
 - App models (Project, …) are hand-written at the bottom of `prisma/schema.prisma`; add a migration with `npm run db:migrate -- --name <name>`, then restart `next dev` (the Prisma client is cached on `globalThis`).
-- Design: tokens in `src/app/globals.css` (cool neutral hue 265 + one cobalt accent, radius 0.5rem); details in docs/PLAN.md Faz 2. Use theme tokens, not raw Tailwind colors, except semantic status colors. No em-dashes in UI copy.
+- Design: Linear/Vercel-style "premium" look; tokens in `src/app/globals.css` (cool neutral hue 265, single cobalt accent `#2563eb`, radius 0.5rem, surfaces separated by tone not lines). Full rules (contrast-safe text shades, card/panel/sidebar treatments) in docs/HANDOFF.md §7. Use theme tokens; raw Tailwind colors only for semantic status/priority/contrast fixes. No `transition-all`, no em-dashes in UI copy.
 - UI: shadcn/ui `base-nova` style (Base UI primitives, not Radix); `cn` comes from the `cn` package. Add components with `npx shadcn@4.21.4 add <name>`.
 - Never run `prisma init` in this repo: it also writes agent skill files and overwrites `skills-lock.json`.
 

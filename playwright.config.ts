@@ -28,6 +28,12 @@ export default defineConfig({
       name: "edge",
       use: { ...devices["Desktop Edge"], channel: "msedge" },
     },
+    {
+      // README screenshot generator; only via `npm run screenshots` (not part of E2E/CI).
+      name: "screenshots",
+      testDir: "./tests/screenshots",
+      use: { ...devices["Desktop Edge"], channel: "msedge" },
+    },
   ],
   // Production build: Next allows only one `next dev` per project, and the dev
   // server may already be running on :3000.
