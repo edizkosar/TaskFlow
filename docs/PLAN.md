@@ -237,7 +237,8 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 | `npm audit`: eslint-config-next zincirinde 5 yüksek (yalnızca dev) | Next.js güncellemelerinde tekrar kontrol |
 | Görev araması `ILIKE '%…%'` indeks kullanamaz | Binlerce görevde `pg_trgm` GIN indeksi (`translate(lower(title),'ı','i')` ifadesi üzerinde) |
 | Panel açılınca sayfa sunucu bileşeni ve pano sorgusu yeniden çalışır | MVP için kabul; gerekirse panel verisi ayrı bir GET ile istemciden yüklenir |
-| E2E testleri geliştirme veritabanına yazar | Neon `test` branch'i + `.env.test.local` |
+| E2E testleri geliştirme veritabanına yazar | Çözüldü: Neon `test` branch'i (`.env.test.local`, CI'da repository secret'ları) |
+| Uygulama ile veritabanı farklı bölgelerdeyse her kayıt saniyeler sürer (CI: ABD ↔ Frankfurt'ta görev oluşturma ~3,5 sn) | Canlıda uygulamayı veritabanıyla aynı bölgede barındır (Vercel `fra1` + Neon `eu-central-1`) |
 
 ## 11. Başlamadan önce kullanıcının yapacakları
 
