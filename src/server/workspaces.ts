@@ -35,7 +35,7 @@ const createWorkspaceSchema = z.object({
   slug: z
     .string()
     .trim()
-    .regex(SLUG_PATTERN, "3–48 karakter; küçük harf, rakam ve tire kullanılabilir."),
+    .regex(SLUG_PATTERN, "3-48 karakter; küçük harf, rakam ve tire kullanılabilir."),
 });
 
 export type CreateWorkspaceState = {

@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -9,17 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String
-  emailVerified Boolean      @default(false)
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  members       Member[]
-  invitations   Invitation[]
+  id              String       @id
+  name            String
+  email           String
+  emailVerified   Boolean      @default(false)
+  image           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  sessions        Session[]
+  accounts        Account[]
+  members         Member[]
+  invitations     Invitation[]
+  // TaskFlow
+  createdProjects Project[]
 
   @@unique([email])
   @@map("user")
@@ -83,6 +84,8 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  // TaskFlow
+  projects    Project[]
 
   @@unique([slug])
   @@map("organization")
@@ -117,4 +120,29 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+// ---------------------------------------------------------------------------
+// TaskFlow application models (hand-written; `npm run auth:generate` would
+// overwrite this file, so re-add them if it is ever run).
+// ---------------------------------------------------------------------------
+
+model Project {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  /// Short uppercase code used in task ids, e.g. "MOB" → MOB-12. Unique per workspace.
+  key            String
+  description    String?
+  /// Last task number issued in this project; incremented in a transaction.
+  taskCounter    Int          @default(0)
+  createdById    String?
+  createdBy      User?        @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("project")
 }

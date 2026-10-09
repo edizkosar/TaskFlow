@@ -1,4 +1,4 @@
-import { expect, type BrowserContext, type Page } from "@playwright/test";
+import { expect, type Browser, type BrowserContext, type Page } from "@playwright/test";
 
 export function uniqueId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -29,4 +29,35 @@ export async function createWorkspace(page: Page, name: string) {
   await page.getByRole("button", { name: "Workspace oluştur" }).click();
   await expect(page).toHaveURL(`/w/${slug}`);
   return slug;
+}
+
+/**
+ * Invites a new user from the owner's settings page and accepts as them.
+ * Returns the new member's page (signed in, in its own context).
+ */
+export async function addMember(browser: Browser, ownerPage: Page, slug: string, label = "Üye") {
+  const member = uniqueUser(label);
+  await ownerPage.goto(`/w/${slug}/settings`);
+  await ownerPage.getByLabel("E-posta").fill(member.email);
+  await ownerPage.getByRole("button", { name: "Davet et" }).click();
+  const link = new URL((await ownerPage.getByRole("status").locator("code").textContent())!.trim());
+
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await signUpViaApi(context, member);
+  await page.goto(link.pathname);
+  await page.getByRole("button", { name: "Daveti kabul et" }).click();
+  await expect(page).toHaveURL(new RegExp(`/w/${slug}`));
+  return { member, page, context };
+}
+
+/** Creates a project through the dialog (sidebar "+" or empty-state button). */
+export async function createProject(page: Page, name: string, key?: string) {
+  await page.getByRole("button", { name: "Yeni proje" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Proje adı").fill(name);
+  if (key) await dialog.getByLabel("Kod").fill(key);
+  const finalKey = await dialog.getByLabel("Kod").inputValue();
+  await dialog.getByRole("button", { name: "Proje oluştur" }).click();
+  return finalKey;
 }

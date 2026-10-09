@@ -1,8 +1,11 @@
-import { FolderKanbanIcon } from "lucide-react";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { PageHeader } from "@/components/page-header";
+import { NewProjectButton } from "@/components/project/new-project-button";
+import { hasRole } from "@/lib/roles";
 import { requireMember } from "@/server/access";
+import { listProjects } from "@/server/queries";
 
 export async function generateMetadata({ params }: PageProps<"/w/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -10,21 +13,28 @@ export async function generateMetadata({ params }: PageProps<"/w/[slug]">): Prom
   return { title: workspace.name };
 }
 
-// Phase 2 replaces this with the project list.
+/** Opens the first project; shows an empty state when there are none. */
 export default async function WorkspacePage({ params }: PageProps<"/w/[slug]">) {
   const { slug } = await params;
-  await requireMember(slug);
+  const { workspace, role } = await requireMember(slug);
+  const projects = await listProjects(workspace.id);
+  if (projects.length > 0) redirect(`/w/${slug}/p/${projects[0].key}`);
+
+  const canCreate = hasRole(role, "admin");
 
   return (
     <>
       <PageHeader title="Projeler" />
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-        <FolderKanbanIcon className="size-10 text-muted-foreground" aria-hidden />
-        <h2 className="text-lg font-medium">Henüz proje yok</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Projeler ve Kanban panosu bir sonraki adımda geliyor. Şimdilik Ayarlar&apos;dan ekip
-          arkadaşlarını davet edebilirsin.
-        </p>
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="flex max-w-sm flex-col items-start gap-3">
+          <h2 className="text-lg font-semibold tracking-tight">{workspace.name} için ilk proje</h2>
+          <p className="text-sm text-muted-foreground">
+            {canCreate
+              ? "Projeler görevleri bir araya toplar: bir uygulama, bir kampanya ya da bir sprint. Kanban panosu proje içinde açılır."
+              : "Bu workspace'te henüz proje yok. Bir yönetici proje oluşturduğunda burada görünecek."}
+          </p>
+          {canCreate && <NewProjectButton slug={slug} />}
+        </div>
       </div>
     </>
   );

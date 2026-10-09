@@ -160,13 +160,15 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 
 **Sonraya kalanlar:** workspace adını/adresini değiştirme, workspace silme (owner), üyenin workspace'ten kendisi ayrılması.
 
-### Faz 2 — Projeler ve uygulama iskeleti
+### Faz 2 — Projeler ve uygulama iskeleti ✅
 
 - Sidebar proje listesi, proje oluştur/düzenle/sil (admin+)
 - Boş durumlar, yükleme iskeletleri, koyu/açık mod geçişi
 - `design-taste-frontend` ile görsel yön; tasarım token'ları `globals.css`'te
 
 **Kabul:** Admin proje oluşturur, member oluşturamaz; tema tercihi kalıcı.
+
+**Görsel yön (uygulandı):** Linear tarzı yoğun ürün arayüzü. Soğuk nötr gri tabanı (oklch hue 265), tek vurgu rengi kobalt mavi (hue 255), saf beyaz/siyah yok, `--radius: 0.5rem`, Geist + Geist Mono, hareket yalnızca geri bildirim için. İkon ailesi: lucide (shadcn ile geliyor; tek aile). Arayüz metinlerinde uzun tire kullanılmaz. Proje kodu oluşturulduktan sonra değiştirilemez.
 
 ### Faz 3 — Kanban panosu
 
