@@ -21,13 +21,14 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { generateKeyBetween } from "fractional-indexing";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
 import { hasActiveFilters, matchesFilters, readFilters } from "@/lib/board-filters";
 import { STATUS_LABELS, TASK_STATUSES, type TaskStatus } from "@/lib/task-status";
 import { compareTasks, type BoardTask } from "@/lib/task-types";
+import { openTaskPanel } from "@/lib/task-url";
 import { createTask, moveTask } from "@/server/tasks";
 
 import { BoardColumn, columnId } from "./board-column";
@@ -65,6 +66,8 @@ function placeTask(tasks: BoardTask[], id: string, status: TaskStatus, list: Boa
 }
 
 export function BoardContainer({ slug, project, tasks: serverTasks, currentUserId }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const filters = useMemo(() => readFilters(searchParams), [searchParams]);
   const filtered = hasActiveFilters(filters);
@@ -167,7 +170,11 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
   const sensors = useSensors(
     // A small distance keeps clicks (task panel) from starting a drag.
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: keyboardCoordinates }),
+    // Space picks a card up; Enter is free to open the task panel.
+    useSensor(KeyboardSensor, {
+      coordinateGetter: keyboardCoordinates,
+      keyboardCodes: { start: ["Space"], cancel: ["Escape"], end: ["Space", "Enter"] },
+    }),
   );
 
   function onDragStart({ active }: DragStartEvent) {
@@ -220,11 +227,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
     const server =
       live.current.serverTasks.find((t) => t.id === task.id) ?? live.current.base.find((t) => t.id === task.id);
     if (!server) return;
-    boardStore.setMove(
-      task.id,
-      { status: server.status, position: server.position },
-      { status: task.status, position: keyBetween(before, after) },
-    );
+    const patchKey = boardStore.patch(server, { status: task.status, position: keyBetween(before, after) });
 
     try {
       const result = await boardStore.track(
@@ -235,9 +238,9 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
         }),
       );
       if (!result.ok) throw new Error(result.error);
-      boardStore.confirmMove(task.id, result.data.position);
+      boardStore.confirm(patchKey, { position: result.data.position });
     } catch (error) {
-      boardStore.rejectMove(task.id);
+      boardStore.reject(patchKey);
       toast.error(error instanceof Error && error.message ? error.message : "Görev taşınamadı.");
     }
   }
@@ -247,6 +250,10 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
     keyboardTarget.current = null;
     setActiveId(null);
     setPreview(null);
+  }
+
+  function openTask(task: BoardTask) {
+    openTaskPanel(router, pathname, new URLSearchParams(searchParams), `${project.key}-${task.number}`);
   }
 
   async function onCreate(status: TaskStatus, title: string) {
@@ -318,7 +325,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
         announcements,
         screenReaderInstructions: {
           draggable:
-            "Görevi tutmak için boşluk ya da Enter tuşuna bas. Ok tuşlarıyla taşı, bırakmak için tekrar boşluk ya da Enter, vazgeçmek için Escape tuşuna bas.",
+            "Görevi açmak için Enter tuşuna bas. Taşımak için boşluk tuşuyla tut, ok tuşlarıyla taşı, tekrar boşluk ile bırak; vazgeçmek için Escape.",
         },
       }}
     >
@@ -331,6 +338,7 @@ export function BoardContainer({ slug, project, tasks: serverTasks, currentUserI
             projectKey={project.key}
             filtered={filtered}
             onCreate={onCreate}
+            onOpen={openTask}
           />
         ))}
       </div>

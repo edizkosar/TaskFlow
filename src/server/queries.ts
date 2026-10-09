@@ -4,7 +4,7 @@ import { cache } from "react";
 
 import { prisma } from "@/lib/db";
 import { compareTasks } from "@/lib/task-types";
-import { boardTaskSelect, toBoardTask } from "@/server/task-dto";
+import { boardTaskSelect, taskDetailSelect, toBoardTask, toTaskDetail } from "@/server/task-dto";
 
 // Read-only data helpers. Callers must have authorized access to the workspace
 // (requireMember) first; these do not check permissions themselves.
@@ -49,4 +49,13 @@ export const listLabels = cache(async (organizationId: string) => {
     select: { id: true, name: true, color: true },
     orderBy: { name: "asc" },
   });
+});
+
+/** Task panel data by per-project number (from `?task=MOB-12`), or null. */
+export const getTaskDetail = cache(async (projectId: string, number: number) => {
+  const row = await prisma.task.findUnique({
+    where: { projectId_number: { projectId, number } },
+    select: taskDetailSelect,
+  });
+  return row ? toTaskDetail(row) : null;
 });

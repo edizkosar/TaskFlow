@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
-import type { BoardTask } from "@/lib/task-types";
+import type { BoardTask, TaskDetail } from "@/lib/task-types";
 
 export const boardTaskSelect = {
   id: true,
@@ -28,5 +28,40 @@ export function toBoardTask(row: BoardTaskRow): BoardTask {
     dueDate: row.dueDate ? row.dueDate.toISOString().slice(0, 10) : null,
     assignee: row.assignee,
     labels: row.labels.map((l) => l.label),
+  };
+}
+
+export const taskDetailSelect = {
+  ...boardTaskSelect,
+  description: true,
+  createdAt: true,
+  creator: { select: { id: true, name: true } },
+  comments: {
+    select: {
+      id: true,
+      body: true,
+      createdAt: true,
+      editedAt: true,
+      author: { select: { id: true, name: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  },
+} satisfies Prisma.TaskSelect;
+
+type TaskDetailRow = Prisma.TaskGetPayload<{ select: typeof taskDetailSelect }>;
+
+export function toTaskDetail(row: TaskDetailRow): TaskDetail {
+  return {
+    ...toBoardTask(row),
+    description: row.description,
+    createdAt: row.createdAt.toISOString(),
+    creator: row.creator,
+    comments: row.comments.map((c) => ({
+      id: c.id,
+      body: c.body,
+      createdAt: c.createdAt.toISOString(),
+      editedAt: c.editedAt?.toISOString() ?? null,
+      author: c.author,
+    })),
   };
 }

@@ -19,12 +19,14 @@ export function BoardColumn({
   projectKey,
   filtered,
   onCreate,
+  onOpen,
 }: {
   status: TaskStatus;
   tasks: BoardTask[];
   projectKey: string;
   filtered: boolean;
   onCreate: (status: TaskStatus, title: string) => Promise<boolean>;
+  onOpen: (task: BoardTask) => void;
 }) {
   // The whole column is a drop target so empty columns accept cards.
   const { setNodeRef, isOver } = useDroppable({ id: columnId(status), data: { type: "column", status } });
@@ -52,7 +54,7 @@ export function BoardColumn({
         <SortableContext id={columnId(status)} items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           <ol className="flex flex-col gap-2" aria-label={`${STATUS_LABELS[status]} görevleri`}>
             {tasks.map((task) => (
-              <SortableTaskCard key={task.id} task={task} projectKey={projectKey} />
+              <SortableTaskCard key={task.id} task={task} projectKey={projectKey} onOpen={onOpen} />
             ))}
           </ol>
         </SortableContext>

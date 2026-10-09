@@ -19,8 +19,16 @@ const PRIORITY_ICONS: Record<Exclude<TaskPriority, "NONE">, { Icon: typeof Signa
 
 const dueFormat = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "UTC" });
 
-export function SortableTaskCard({ task, projectKey }: { task: BoardTask; projectKey: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+export function SortableTaskCard({
+  task,
+  projectKey,
+  onOpen,
+}: {
+  task: BoardTask;
+  projectKey: string;
+  onOpen: (task: BoardTask) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging, active } = useSortable({
     id: task.id,
     data: { type: "task", status: task.status },
     // Unsaved (optimistic) cards can't be moved or used as drop targets yet.
@@ -36,6 +44,15 @@ export function SortableTaskCard({ task, projectKey }: { task: BoardTask; projec
       data-task-id={task.id}
       {...attributes}
       {...listeners}
+      // Click / Enter opens the panel. Ignored while any drag is in progress
+      // (Enter also drops a keyboard drag; a pointer drag ends with a click).
+      onClick={() => {
+        if (!active && !task.id.startsWith("temp-")) onOpen(task);
+      }}
+      onKeyDown={(event) => {
+        listeners?.onKeyDown?.(event);
+        if (event.key === "Enter" && !active && !event.defaultPrevented && !task.id.startsWith("temp-")) onOpen(task);
+      }}
       aria-roledescription="sürüklenebilir görev"
     >
       <TaskCardContent task={task} projectKey={projectKey} />

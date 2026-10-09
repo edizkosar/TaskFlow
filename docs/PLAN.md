@@ -184,7 +184,7 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 
 **Bilinen sınır:** Dar ekranda pano yatay kaydırıldığında, hedef sütun görünür alanın dışındaysa klavyeyle sütun değiştirme ilk basışta kartı taşımak yerine panoyu kaydırabilir (dnd-kit klavye sensörü davranışı). Faz 5'te ele alınacak.
 
-### Faz 4 — Görev detay paneli
+### Faz 4 — Görev detay paneli ✅
 
 - Sağdan açılan panel (`?task=MOB-12`), linkle doğrudan açılabilir
 - Başlık/açıklama düzenleme, durum, öncelik, atanan kişi (yalnızca üyeler), bitiş tarihi, etiket seçimi/oluşturma
@@ -192,6 +192,13 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 - Görevi silme (onaylı)
 
 **Kabul:** B'ye atanan görev B'nin "bana atananlar" filtresinde görünüyor; yorumlar iki kullanıcıda da görünüyor.
+
+**Uygulama notları:**
+- Panel kabuğu istemcide URL'den anında açılır; gövde (`TaskPanelBody`) sunucuda yüklenip `Suspense` ile akar. Panel açılırken pano iskelet ekrana dönmez (test edildi), ancak sayfa sunucu bileşeni yeniden çalıştığı için pano sorgusu tekrarlanır (MVP için kabul).
+- Kayıt stratejisi: tuş başına değil, işlem bitince (blur, başlıkta Enter, açıklamada Ctrl+Enter, tarihte Enter/blur). Değişmeyen değer gönderilmez; Esc geri alır. Seçimler (durum, öncelik, atanan, etiket) anında kaydedilir.
+- Panel ve pano aynı iyimser depoyu (`optimistic-store`) kullanır; paneldeki değişiklik kartta anında görünür.
+- Klavye: kartta Enter paneli açar, boşluk sürüklemeyi başlatır. Panel uygulama içinden açıldıysa kapatma "geri" ile olur; paylaşılan linkle açıldıysa yalnızca `task` parametresi kaldırılır.
+- Yetki: yorum düzenleme/silme yalnızca yazar (sunucuda doğrulanır, E2E testinde sahte istekle denendi). Görev silme: görevi oluşturan ya da yönetici. Etiketi her üye oluşturabilir.
 
 ### Faz 5 — Cila ve doğrulama
 

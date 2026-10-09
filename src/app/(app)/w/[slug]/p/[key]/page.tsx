@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { BoardContainer } from "@/components/board/board-container";
 import { FilterBar } from "@/components/board/filter-bar";
 import { PageHeader } from "@/components/page-header";
 import { ProjectActions } from "@/components/project/project-actions";
+import { TaskPanelBody, TaskPanelSkeleton } from "@/components/task/task-panel-body";
+import { TaskPanelShell } from "@/components/task/task-panel-shell";
 import { hasRole } from "@/lib/roles";
 import { requireMember } from "@/server/access";
 import { getProjectByKey, listBoardTasks, listLabels, listMembers } from "@/server/queries";
@@ -22,8 +25,10 @@ export async function generateMetadata({ params }: PageProps<"/w/[slug]/p/[key]"
   return { title: project.name };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/w/[slug]/p/[key]">) {
+export default async function ProjectPage({ params, searchParams }: PageProps<"/w/[slug]/p/[key]">) {
   const { slug, role, session, workspace, project } = await load(params);
+  const { task } = await searchParams;
+  const taskParam = typeof task === "string" ? task : null;
   const [tasks, members, labels] = await Promise.all([
     listBoardTasks(project.id),
     listMembers(workspace.id),
@@ -51,6 +56,21 @@ export default async function ProjectPage({ params }: PageProps<"/w/[slug]/p/[ke
         tasks={tasks}
         currentUserId={session.user.id}
       />
+      <TaskPanelShell>
+        {/* Keyed by task so switching tasks shows the skeleton, not the previous task. */}
+        <Suspense key={taskParam} fallback={<TaskPanelSkeleton />}>
+          {taskParam && (
+            <TaskPanelBody
+              slug={slug}
+              project={{ id: project.id, key: project.key }}
+              taskParam={taskParam}
+              members={members}
+              labels={labels}
+              viewer={{ id: session.user.id, isAdmin: hasRole(role, "admin") }}
+            />
+          )}
+        </Suspense>
+      </TaskPanelShell>
     </div>
   );
 }

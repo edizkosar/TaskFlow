@@ -23,6 +23,7 @@ model User {
   createdProjects Project[]
   assignedTasks   Task[]       @relation("TaskAssignee")
   createdTasks    Task[]       @relation("TaskCreator")
+  comments        Comment[]
 
   @@unique([email])
   @@map("user")
@@ -187,6 +188,7 @@ model Task {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   labels      TaskLabel[]
+  comments    Comment[]
 
   @@unique([projectId, number])
   @@index([projectId, status, position])
@@ -217,4 +219,19 @@ model TaskLabel {
   @@id([taskId, labelId])
   @@index([labelId])
   @@map("task_label")
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  taskId    String
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime  @default(now())
+  /// Set when the author edits the body.
+  editedAt  DateTime?
+
+  @@index([taskId, createdAt])
+  @@map("comment")
 }
