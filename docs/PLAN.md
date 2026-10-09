@@ -139,7 +139,7 @@ tests/e2e/                               ← Playwright Test
 
 Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili Playwright testleri ve **tek bir commit**. Bir faz bitmeden sonrakine geçilmez.
 
-### Faz 0 — Altyapı
+### Faz 0 — Altyapı ✅
 
 - shadcn/ui kurulumu (`components.json`, temel bileşenler), `next-themes`
 - Prisma 7.10.0 + Neon bağlantısı, `prisma.config.ts`
@@ -196,8 +196,9 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 
 ## 9. Test stratejisi
 
-- **E2E (Playwright Test):** her fazın kabul senaryosu bir test; testler kendi kullanıcı/workspace verisini oluşturur.
-- **Test veritabanı:** Neon'da ayrı bir `test` branch'i; testler yalnızca bu branch'e bağlanır (`.env.test.local`).
+- **E2E (Playwright Test):** her fazın kabul senaryosu bir test; testler kendi kullanıcı/workspace verisini oluşturur (benzersiz `@taskflow.test` e-postaları).
+- **Test sunucusu:** `next build` + `next start` (port 3100). Next.js aynı projede ikinci bir `next dev`'e izin vermediği için dev server ile çakışmaz.
+- **Test veritabanı:** `.env.test.local` varsa (Neon `test` branch'i) test sunucusu onu kullanır; yoksa `.env.local`'daki veritabanına yazar.
 - **Görsel kontrol:** `playwright-cli` ve tarayıcı paneli ile koyu/açık mod, 375px mobil genişlik.
 - Oturum dosyaları (`playwright/.auth/`) gitignore'da.
 
