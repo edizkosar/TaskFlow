@@ -170,7 +170,7 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 
 **Görsel yön (uygulandı):** Linear tarzı yoğun ürün arayüzü. Soğuk nötr gri tabanı (oklch hue 265), tek vurgu rengi kobalt mavi (hue 255), saf beyaz/siyah yok, `--radius: 0.5rem`, Geist + Geist Mono, hareket yalnızca geri bildirim için. İkon ailesi: lucide (shadcn ile geliyor; tek aile). Arayüz metinlerinde uzun tire kullanılmaz. Proje kodu oluşturulduktan sonra değiştirilemez.
 
-### Faz 3 — Kanban panosu
+### Faz 3 — Kanban panosu ✅
 
 - 4 sütun (Backlog, Yapılacak, Yapılıyor, Tamamlandı), sütun başına görev sayısı
 - Hızlı görev oluşturma (sütun içinden)
@@ -179,6 +179,10 @@ Her faz sonunda: `npm run lint`, `npm run build`, tarayıcıda kontrol, ilgili P
 - Filtre: atanan kişi, etiket, "bana atananlar"
 
 **Kabul:** Görev taşındığında yenilemeden sonra da yeni yerinde; klavyeyle taşınabiliyor.
+
+**Uygulama notları:** `Task`, `Label`, `TaskLabel` tabloları eklendi; `task.position` sütunu `COLLATE "C"`. Sunucu taşımada komşu id'lerinden pozisyonu kendisi hesaplar. Üye workspace'ten çıkarılınca görevleri atanmamış olur (Better Auth `afterRemoveMember` kancası). Etiket filtresi yalnızca workspace'te etiket varsa görünür; etiket oluşturma ve atama Faz 4'te.
+
+**Bilinen sınır:** Dar ekranda pano yatay kaydırıldığında, hedef sütun görünür alanın dışındaysa klavyeyle sütun değiştirme ilk basışta kartı taşımak yerine panoyu kaydırabilir (dnd-kit klavye sensörü davranışı). Faz 5'te ele alınacak.
 
 ### Faz 4 — Görev detay paneli
 

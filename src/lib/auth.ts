@@ -24,6 +24,15 @@ export const auth = betterAuth({
       async sendInvitationEmail(data) {
         console.info(`[invite] ${data.email} → /invite/${data.id}`);
       },
+      organizationHooks: {
+        // Removed members keep their account; their tasks in this workspace become unassigned.
+        async afterRemoveMember({ member, organization }) {
+          await prisma.task.updateMany({
+            where: { assigneeId: member.userId, project: { organizationId: organization.id } },
+            data: { assigneeId: null },
+          });
+        },
+      },
     }),
     // Must be last so Server Actions can set auth cookies.
     nextCookies(),

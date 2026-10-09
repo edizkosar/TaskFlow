@@ -25,6 +25,14 @@ Architecture, data model and phase plan: [docs/PLAN.md](docs/PLAN.md). Follow it
 - UI: shadcn/ui `base-nova` style (Base UI primitives, not Radix); `cn` comes from the `cn` package. Add components with `npx shadcn@4.21.4 add <name>`.
 - Never run `prisma init` in this repo: it also writes agent skill files and overwrites `skills-lock.json`.
 
+## Interactive UI rules (board, task panel)
+
+- **Server/client boundary:** `page.tsx` stays a Server Component: it authorizes (`requireMember`), loads data and passes plain serializable props. Only interactive islands are client components (board container + cards, filter bar, task panel). Never fetch from the client what the page can load.
+- **Optimistic updates:** apply the change immediately, then call the Server Action; on `{ ok: false }` or a throw, undo and `toast.error`. On the board, confirmed-but-not-yet-refreshed changes live in `src/components/board/optimistic-store.ts` (module store, not component state): a move is stored as from → to and only overrides server data that still shows `from`, so stale payloads can't undo it and other users' changes still win. Drag preview is component state; in-flight creates are a separate `pending` list. Wrap saves in `boardStore.track()` (warns before unload mid-save). Don't use `useOptimistic` for drag-and-drop: it snaps back when the transition ends.
+- **dnd-kit gotchas:** handlers can run from an earlier render, so read board data from refs (`live.current`); the board uses its own collision detection (column first, then closest card) and keyboard coordinate getter (Left/Right = column, Up/Down = slot). In E2E keyboard drags, wait for `aria-pressed="true"` and a frame between keys (`keyboardMove` in tests/e2e/board.spec.ts), and wait for the save POST before `page.reload()`.
+- **Ordering (fractional indexing):** `Task.position` is a string key from `generateKeyBetween(before, after)` (`fractional-indexing` package). Never hand-roll midpoints. End of column = `generateKeyBetween(last, null)`; empty column = `generateKeyBetween(null, null)`. The column uses `COLLATE "C"` (byte order, matches JS `<`); always sort by `position` then `id` (ties are possible under concurrent moves). Moving a task updates only that row.
+- **URL is the UI state:** filters and the open task live in search params (`?assignee=…&label=…&task=MOB-12`), read with `useSearchParams`, written with the router. Opening/closing the task panel uses `router.push` (Back closes it); changing filters uses `router.replace` (no history spam). Always `{ scroll: false }`. No global store (Zustand etc.). MVP loads all tasks of a project and filters on the client.
+
 ## Skills
 
 - `design-taste-frontend` — visual direction and marketing/landing pages. Its rules target landing pages, not dense app UI; apply selectively to dashboards, task lists and forms.
