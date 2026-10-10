@@ -2,6 +2,8 @@
 
 Ekipler için Linear tarzı proje ve görev yönetimi: workspace'ler, roller ve davetler, proje bazlı Kanban panosu, görev detay paneli, yorumlar ve komut paleti.
 
+**Canlı demo:** [task-flow-lovat-tau.vercel.app](https://task-flow-lovat-tau.vercel.app) (ücretsiz kayıt ol, kendi workspace'ini oluştur)
+
 **Teknoloji:** Next.js 16 (App Router, Server Actions) · TypeScript · Tailwind CSS 4 · shadcn/ui (Base UI) · Prisma 7 + Postgres (Neon) · Better Auth · dnd-kit · Playwright
 
 ![CI](https://github.com/edizkosar/TaskFlow/actions/workflows/ci.yml/badge.svg)
