@@ -147,7 +147,7 @@ docs/PLAN.md                       mimari + fazlar + riskler;  docs/screenshots/
 
 ## 11. Açık işler / sıradaki adımlar
 
-**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler kullanıcı isteyince sırayla yapılacak. **A ve B tamamlandı (2026-10-10); sıradaki C (README canlı demo linki).** Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
+**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler kullanıcı isteyince sırayla yapılacak. **A, B ve C (demo linki) tamamlandı (2026-10-10); kalan yalnızca opsiyonel D.** Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
 
 ### A. Depoyu public yapmak: TAMAMLANDI (2026-10-10)
 Geçmiş taraması temizdi (16 commit; env değerleri, şifre/token kalıpları yok; tek URL eşleşmesi `.env.example` yer tutucusu). Kullanıcı onayıyla public yapıldı; açıklama ve topic'ler (`nextjs`, `typescript`, `prisma`, `kanban`, `tailwindcss`) eklendi. CI rozeti (passing) ve README görselleri anonim erişimde 200 dönüyor. Aşağıdaki adımlar kayıt için duruyor.
@@ -168,7 +168,8 @@ Canlı: https://task-flow-lovat-tau.vercel.app. Neon `live` branch'i `production
 6. Yayından sonra kontrol: kayıt/giriş, workspace, proje, görev, sürükle-bırak, panel, palet; tarayıcı konsolu temiz; sağlık için ilk istekler `fra1`'de mi.
 7. Dikkat: production'da Better Auth `BETTER_AUTH_URL` gerçek alan adı olmalı (çerezler/redirect). Davet linkleri `window.location.origin` ile oluşur, ek ayar gerekmez.
 
-### C. CV cilası (B'den sonra)
+### C. CV cilası: TAMAMLANDI (2026-10-10)
+README başına canlı demo linki ve GitHub depo "homepage" alanı eklendi. Demo hesabı açılmadı (kullanıcı tercihi): ziyaretçiler kendileri kayıt olur. Aşağıdaki maddeler kayıt için duruyor.
 - README'nin başına canlı demo linki; isteğe bağlı salt-okunur bir **demo hesabı** + seed (şu an seed betiği yok; `tests/screenshots/demo.spec.ts` demo verisini nasıl kuracağını gösterir, Prisma tabanlı bir `prisma/seed.ts` olarak uyarlanabilir).
 - Görselleri yenilemek: `npm run screenshots` (test DB'ye yazar).
 
