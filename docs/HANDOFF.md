@@ -24,7 +24,7 @@
 |---|---|
 | Proje klasörü | `C:\Users\Ediz-\Desktop\My_Projects\TaskFlow` (Windows 11, PowerShell + Git Bash) |
 | Git | Depo kökü proje klasörü, dal `main`. (Başta yanlışlıkla `C:\Users\Ediz-` kökünde boş bir repo vardı; kaldırıldı.) |
-| GitHub | `https://github.com/edizkosar/TaskFlow` (**private**). `gh` kurulu: `C:\Program Files\GitHub CLI\gh.exe` (bazı terminallerde PATH'te değil, tam yolla çağır). `gh auth setup-git` yapıldı (global git credential helper). |
+| GitHub | `https://github.com/edizkosar/TaskFlow` (**public** since 2026-10-10; açıklama + topic'ler eklendi). `gh` kurulu: `C:\Program Files\GitHub CLI\gh.exe` (bazı terminallerde PATH'te değil, tam yolla çağır). `gh auth setup-git` yapıldı (global git credential helper). |
 | Veritabanı | **Neon** Postgres, Frankfurt (`eu-central-1`). Branch'ler: `main` (dev verisi, `.env.local`) ve `test` (E2E, `.env.test.local` + CI secret'ları). Collation `C.UTF-8`. |
 | `.env.local` | `DATABASE_URL` (pooled), `DIRECT_URL` (direct), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=http://localhost:3000`. Gitignore'da. |
 | `.env.test.local` | Aynı anahtarlar, Neon `test` branch'i. Playwright config bunu okur. |
@@ -146,9 +146,11 @@ docs/PLAN.md                       mimari + fazlar + riskler;  docs/screenshots/
 
 ## 11. Açık işler / sıradaki adımlar
 
-**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler **yapılmadı**, kullanıcı isteyince sırayla yapılacak. Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
+**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler kullanıcı isteyince sırayla yapılacak. **A tamamlandı (2026-10-10); sıradaki B.** Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
 
-### A. Depoyu public yapmak (kısa, ~5 dk; geri alınamaz, açık onay şart)
+### A. Depoyu public yapmak: TAMAMLANDI (2026-10-10)
+Geçmiş taraması temizdi (16 commit; env değerleri, şifre/token kalıpları yok; tek URL eşleşmesi `.env.example` yer tutucusu). Kullanıcı onayıyla public yapıldı; açıklama ve topic'ler (`nextjs`, `typescript`, `prisma`, `kanban`, `tailwindcss`) eklendi. CI rozeti (passing) ve README görselleri anonim erişimde 200 dönüyor. Aşağıdaki adımlar kayıt için duruyor.
+
 1. Tüm git geçmişini tekrar tara: commit'lenmiş dosya adlarında `.env*` (`.env.example` hariç), `*.local.md`, `.pem`, `auth.json`, `storage-state*` olmamalı; `.env.local` ve `.env.test.local`'daki gerçek değerler (DB şifreleri, hostlar, `BETTER_AUTH_SECRET`) `git log --all -p` içinde geçmemeli. (Son tarama `59ce633`'te temizdi; sonrasında yalnızca kod/doküman eklendi.)
 2. Kullanıcıdan açık "public yap" onayı al (public olan içerik kopyalanabilir; private'a dönmek bunu geri almaz).
 3. `gh repo edit edizkosar/TaskFlow --visibility public --accept-visibility-change-consequences` (tam yol: `C:\Program Files\GitHub CLI\gh.exe`).
