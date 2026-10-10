@@ -25,7 +25,8 @@
 | Proje klasörü | `C:\Users\Ediz-\Desktop\My_Projects\TaskFlow` (Windows 11, PowerShell + Git Bash) |
 | Git | Depo kökü proje klasörü, dal `main`. (Başta yanlışlıkla `C:\Users\Ediz-` kökünde boş bir repo vardı; kaldırıldı.) |
 | GitHub | `https://github.com/edizkosar/TaskFlow` (**public** since 2026-10-10; açıklama + topic'ler eklendi). `gh` kurulu: `C:\Program Files\GitHub CLI\gh.exe` (bazı terminallerde PATH'te değil, tam yolla çağır). `gh auth setup-git` yapıldı (global git credential helper). |
-| Veritabanı | **Neon** Postgres, Frankfurt (`eu-central-1`). Branch'ler: `main` (dev verisi, `.env.local`) ve `test` (E2E, `.env.test.local` + CI secret'ları). Collation `C.UTF-8`. |
+| Veritabanı | **Neon** Postgres, Frankfurt (`eu-central-1`). Branch'ler: `production` (Neon'un varsayılan branch adı; **adına rağmen dev verisi**, `.env.local`), `test` (E2E, `.env.test.local` + CI secret'ları) ve `live` (canlı site, `.env.vercel`). `test` ve `live`'da son kullanma tarihi kaldırıldı. Collation `C.UTF-8`. |
+| Canlı site | **https://task-flow-lovat-tau.vercel.app** (Vercel Hobby, proje `task-flow`, hesap `ediz-kosar`, GitHub'dan otomatik deploy). Bölge `vercel.json` ile `fra1`. Vercel env (Production): `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET` (yalnızca canlıya özel), `BETTER_AUTH_URL`. Değerlerin yerel kopyası gitignore'daki `.env.vercel` (Next.js bu dosyayı yüklemez). |
 | `.env.local` | `DATABASE_URL` (pooled), `DIRECT_URL` (direct), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=http://localhost:3000`. Gitignore'da. |
 | `.env.test.local` | Aynı anahtarlar, Neon `test` branch'i. Playwright config bunu okur. |
 | GitHub secrets | `DATABASE_URL`, `DIRECT_URL`, `BETTER_AUTH_SECRET` (test branch'i). `gh secret set` ile, değerler yazdırılmadan eklendi. |
@@ -146,7 +147,7 @@ docs/PLAN.md                       mimari + fazlar + riskler;  docs/screenshots/
 
 ## 11. Açık işler / sıradaki adımlar
 
-**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler kullanıcı isteyince sırayla yapılacak. **A tamamlandı (2026-10-10); sıradaki B.** Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
+**Bırakıldığı an (2026-10-09):** kod `main`'de ve GitHub'da (son kod commit'i `b47fb24`), CI yeşil (18/18, flaky yok), çalışma alanı temiz. Kullanıcı bilerek burada durdu; aşağıdakiler kullanıcı isteyince sırayla yapılacak. **A ve B tamamlandı (2026-10-10); sıradaki C (README canlı demo linki).** Kullanıcıyla konuşulan önerilen sıra: (A) depoyu public yapmak → (B) Vercel'e yayınlamak → (C) README'ye canlı demo linki → (D) opsiyonel özellikler.
 
 ### A. Depoyu public yapmak: TAMAMLANDI (2026-10-10)
 Geçmiş taraması temizdi (16 commit; env değerleri, şifre/token kalıpları yok; tek URL eşleşmesi `.env.example` yer tutucusu). Kullanıcı onayıyla public yapıldı; açıklama ve topic'ler (`nextjs`, `typescript`, `prisma`, `kanban`, `tailwindcss`) eklendi. CI rozeti (passing) ve README görselleri anonim erişimde 200 dönüyor. Aşağıdaki adımlar kayıt için duruyor.
@@ -156,7 +157,9 @@ Geçmiş taraması temizdi (16 commit; env değerleri, şifre/token kalıpları 
 3. `gh repo edit edizkosar/TaskFlow --visibility public --accept-visibility-change-consequences` (tam yol: `C:\Program Files\GitHub CLI\gh.exe`).
 4. README'deki CI rozeti ve görsellerin herkese göründüğünü kontrol et. İsteğe bağlı: depo açıklaması + topic'ler (`nextjs`, `typescript`, `prisma`, `kanban`, `tailwindcss`).
 
-### B. Canlıya alma: Vercel + Neon (uzun, ~30-60 dk; kullanıcı adımları var)
+### B. Canlıya alma: Vercel + Neon: TAMAMLANDI (2026-10-10)
+Canlı: https://task-flow-lovat-tau.vercel.app. Neon `live` branch'i `production`'dan (dev) açıldı, kullanıcı verisi SQL Editor'da `TRUNCATE` ile temizlendi (Claude Code auto mode toplu silmeyi engelledi), `migrate deploy` = no pending. Canlıda doğrulanan: sayfalar 200 ve `fra1`, yabancı Origin'den giriş 403, kayıt/giriş, workspace, proje, görev, panel (açıklama, yorum, etiket, öncelik), klavyeyle sürükle-bırak (reload sonrası kalıcı), Ctrl+K arama, konsolda uygulama hatası yok. Not: Claude'un kurallarına göre canlı sitede hesap açmayı/şifreyle girişi kullanıcı yapar; tarayıcı panelinde kullanıcı girdikten sonra testler yapılır. Canlı migration: `DIRECT_URL=<.env.vercel'den> npx prisma migrate deploy`. Aşağıdaki adımlar kayıt için duruyor.
+
 1. **Kullanıcı:** Vercel hesabı; Neon'da `production` branch'i (dev `main`'den değil, boş/temiz başlaması tercih edilir).
 2. Production DB'ye migration: `DIRECT_URL=<prod direct> npx prisma migrate deploy` (değeri ekrana yazdırmadan).
 3. Vercel projesi: GitHub'dan `edizkosar/TaskFlow` import; **Function region `fra1`** (Neon Frankfurt ile aynı; yoksa her kayıt saniyeler sürer, CI'da ~3,5 sn ölçüldü).
